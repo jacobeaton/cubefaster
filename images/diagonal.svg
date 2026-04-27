@@ -1,0 +1,27 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="cube-case">
+  <defs>
+    <marker id="ah-mark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.5" markerHeight="3.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--case-mark)"/></marker>
+  </defs>
+  <rect x="30" y="30" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="52" y="30" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="74" y="30" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="30" y="52" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="52" y="52" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="74" y="52" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="30" y="74" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="52" y="74" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <rect x="74" y="74" width="20" height="20" rx="3" fill="var(--case-yellow)"/>
+  <polygon points="33,14 47,14 50,28 30,28" fill="var(--case-blue)"/>
+  <polygon points="55,14 69,14 72,28 52,28" fill="var(--case-dark)"/>
+  <polygon points="77,14 91,14 94,28 74,28" fill="var(--case-green)"/>
+  <polygon points="30,96 50,96 47,110 33,110" fill="var(--case-blue)"/>
+  <polygon points="52,96 72,96 69,110 55,110" fill="var(--case-dark)"/>
+  <polygon points="74,96 94,96 91,110 77,110" fill="var(--case-green)"/>
+  <polygon points="14,33 28,30 28,50 14,47" fill="var(--case-red)"/>
+  <polygon points="14,55 28,52 28,72 14,69" fill="var(--case-dark)"/>
+  <polygon points="14,77 28,74 28,94 14,91" fill="var(--case-orange)"/>
+  <polygon points="96,30 110,33 110,47 96,50" fill="var(--case-red)"/>
+  <polygon points="96,52 110,55 110,69 96,72" fill="var(--case-dark)"/>
+  <polygon points="96,74 110,77 110,91 96,94" fill="var(--case-orange)"/>
+  <line x1="79.05" y1="79.05" x2="44.95" y2="44.95" stroke="var(--case-mark)" stroke-width="1.6" stroke-linecap="round" marker-start="url(#ah-mark)" marker-end="url(#ah-mark)"/>
+</svg>
