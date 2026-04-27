@@ -15,7 +15,8 @@
     --ink-soft: #4a4a4a;
     --muted: #7a7a7a;
     --accent: #d64545;
-    --accent-2: #f5b300;
+    --accent-2: #e09800;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #2d6a4f;
     --accent-4: #1d3557;
     --paper: #ffffff;
@@ -41,7 +42,8 @@
     --ink-soft: #e0e0d8;
     --muted: #6272a4;
     --accent: #ff79c6;
-    --accent-2: #f1fa8c;
+    --accent-2: #ffb86c;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #50fa7b;
     --accent-4: #bd93f9;
     --paper: #343746;
@@ -65,7 +67,8 @@
     --ink-soft: #d8dee9;
     --muted: #7b8394;
     --accent: #bf616a;
-    --accent-2: #ebcb8b;
+    --accent-2: #d08770;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #a3be8c;
     --accent-4: #88c0d0;
     --paper: #3b4252;
@@ -89,7 +92,8 @@
     --ink-soft: #93a1a1;
     --muted: #657b83;
     --accent: #dc322f;
-    --accent-2: #b58900;
+    --accent-2: #cb9000;
+    --accent-2-ink: #002b36;
     --accent-3: #859900;
     --accent-4: #268bd2;
     --paper: #073642;
@@ -113,7 +117,8 @@
     --ink-soft: #586e75;
     --muted: #93a1a1;
     --accent: #dc322f;
-    --accent-2: #b58900;
+    --accent-2: #a07700;
+    --accent-2-ink: #fdf6e3;
     --accent-3: #859900;
     --accent-4: #268bd2;
     --paper: #ffffff;
@@ -138,6 +143,7 @@
     --muted: #75715e;
     --accent: #f92672;
     --accent-2: #fd971f;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #a6e22e;
     --accent-4: #66d9ef;
     --paper: #34352f;
@@ -161,7 +167,8 @@
     --ink-soft: #d5c4a1;
     --muted: #928374;
     --accent: #fb4934;
-    --accent-2: #fabd2f;
+    --accent-2: #fe8019;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #b8bb26;
     --accent-4: #83a598;
     --paper: #3c3836;
@@ -185,7 +192,8 @@
     --ink-soft: #a9b1d6;
     --muted: #565f89;
     --accent: #f7768e;
-    --accent-2: #e0af68;
+    --accent-2: #ff9e64;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #9ece6a;
     --accent-4: #7aa2f7;
     --paper: #24283b;
@@ -209,7 +217,8 @@
     --ink-soft: #bac2de;
     --muted: #7f849c;
     --accent: #f5c2e7;
-    --accent-2: #f9e2af;
+    --accent-2: #fab387;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #a6e3a1;
     --accent-4: #89b4fa;
     --paper: #313244;
@@ -233,7 +242,8 @@
     --ink-soft: #9da5b4;
     --muted: #5c6370;
     --accent: #e06c75;
-    --accent-2: #e5c07b;
+    --accent-2: #d19a66;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #98c379;
     --accent-4: #61afef;
     --paper: #353b45;
@@ -257,7 +267,8 @@
     --ink-soft: #424a53;
     --muted: #6e7781;
     --accent: #cf222e;
-    --accent-2: #bf8700;
+    --accent-2: #9a6700;
+    --accent-2-ink: #ffffff;
     --accent-3: #1a7f37;
     --accent-4: #0969da;
     --paper: #f6f8fa;
@@ -281,7 +292,8 @@
     --ink-soft: #c4c1d8;
     --muted: #6e6a86;
     --accent: #eb6f92;
-    --accent-2: #f6c177;
+    --accent-2: #ea9a97;
+    --accent-2-ink: #1a1a1a;
     --accent-3: #9ccfd8;
     --accent-4: #c4a7e7;
     --paper: #1f1d2e;
@@ -479,7 +491,7 @@
 
   .scramble-btn {
     background: var(--accent-2);
-    color: var(--ink);
+    color: var(--accent-2-ink);
     border: none;
     padding: 6px 12px;
     font-family: 'JetBrains Mono', monospace;
@@ -531,32 +543,87 @@
     letter-spacing: 0.05em;
   }
 
-  /* ===== Case banner (shows current case name in trainer mode) ===== */
-  .case-banner {
-    text-align: center;
+  /* ===== Hint panel (shown progressively in trainer mode) ===== */
+  .hint-panel {
     margin-bottom: 12px;
-    padding: 10px 14px;
+    padding: 14px 16px;
     background: rgba(255,255,255,0.06);
     border: 1px dashed rgba(255,255,255,0.15);
     border-radius: 3px;
   }
 
-  .case-banner-label {
+  .hint-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 6px 0;
+  }
+
+  .hint-row + .hint-row { border-top: 1px solid rgba(255,255,255,0.08); }
+
+  .hint-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.2em;
     color: var(--muted);
     text-transform: uppercase;
     font-weight: 700;
-    margin-right: 10px;
+    flex-shrink: 0;
+    width: 70px;
   }
 
-  .case-banner-name {
+  .hint-value {
+    flex-grow: 1;
+    color: var(--paper);
+  }
+
+  .hint-name .hint-value {
     font-family: 'Fraunces', serif;
     font-size: 22px;
     font-weight: 700;
     color: var(--accent-2);
     letter-spacing: -0.01em;
+  }
+
+  .hint-alg .hint-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--paper);
+    word-spacing: 0.1em;
+  }
+
+  .hint-chunk {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 2px 3px 2px 0;
+    background: var(--accent-2);
+    border-radius: 2px;
+    color: var(--accent-2-ink);
+    font-weight: 700;
+    transition: opacity 0.2s, background 0.2s;
+  }
+
+  .hint-chunk.locked {
+    background: transparent;
+    color: var(--muted);
+    border: 1px dashed rgba(255,255,255,0.15);
+    font-weight: 400;
+  }
+
+  .hint-chunk.locked .hint-chunk-text {
+    filter: blur(4px);
+    user-select: none;
+  }
+
+  .hint-progress {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    text-align: right;
   }
 
   /* ===== Case filter ===== */
@@ -600,7 +667,7 @@
   .case-chip:hover { color: var(--paper); border-color: var(--paper); }
   .case-chip.active {
     background: var(--accent-2);
-    color: var(--ink);
+    color: var(--accent-2-ink);
     border-color: var(--accent-2);
   }
 
@@ -815,7 +882,7 @@
 
   .alg-trigger .t {
     background: var(--accent-2);
-    color: var(--ink);
+    color: var(--accent-2-ink);
     padding: 1px 6px;
     border-radius: 2px;
     font-weight: 700;
@@ -1011,10 +1078,6 @@
 
 <!-- ===== Timer ===== -->
 <div class="timer-panel">
-  <div class="case-banner" id="caseBanner" style="display:none;">
-    <span class="case-banner-label">Case:</span>
-    <span class="case-banner-name" id="caseBannerName">—</span>
-  </div>
   <div class="timer-display" id="timerDisplay">0.00</div>
   <div class="timer-status" id="timerStatus">Press &amp; hold SPACE to start</div>
   <div class="timer-controls">
@@ -1022,11 +1085,23 @@
     <button class="btn" id="resetBtn">Reset Session</button>
     <button class="btn" id="inspectionToggle">Inspection: ON</button>
     <button class="btn" id="modeToggle">Mode: WCA Random</button>
+    <button class="btn" id="hintBtn" style="display:none;">Hint (H)</button>
   </div>
   <div class="scramble-row">
     <span class="scramble-label">Scramble</span>
     <span class="scramble-text" id="scrambleText">—</span>
     <button class="scramble-btn" id="newScrambleBtn">New</button>
+  </div>
+  <div class="hint-panel" id="hintPanel" style="display:none;">
+    <div class="hint-row hint-name" id="hintNameRow" style="display:none;">
+      <span class="hint-label">Case</span>
+      <span class="hint-value" id="hintName">—</span>
+    </div>
+    <div class="hint-row hint-alg" id="hintAlgRow" style="display:none;">
+      <span class="hint-label">Algorithm</span>
+      <span class="hint-value" id="hintAlg">—</span>
+    </div>
+    <div class="hint-progress" id="hintProgress"></div>
   </div>
   <div class="case-filter" id="caseFilter" style="display:none;">
     <div class="case-filter-label">Train cases:</div>
@@ -1039,7 +1114,7 @@
     <div class="stat"><div class="stat-label">Ao12</div><div class="stat-value" id="statAo12">—</div></div>
     <div class="stat"><div class="stat-label">Solves</div><div class="stat-value" id="statCount">0</div></div>
   </div>
-  <div class="timer-help">Hold SPACE until green, release to start · Tap SPACE again to stop</div>
+  <div class="timer-help">Hold SPACE until green, release to start · Tap SPACE again to stop · Press H for hints</div>
 </div>
 
 <!-- ===== TOC ===== -->
@@ -1668,6 +1743,15 @@
     releaseHold();
   });
 
+  // H key reveals the next hint (only in trainer mode)
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'h' && e.key !== 'H') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (state === 'running' || state === 'holding' || state === 'ready') return;
+    const hb = document.getElementById('hintBtn');
+    if (hb && hb.style.display !== 'none') hb.click();
+  });
+
   /* ============================================================
      SCRAMBLE GENERATOR — supports two modes:
        - 'wca':     random 20-move scramble (no case targeting)
@@ -1677,14 +1761,22 @@
   const scrambleText = document.getElementById('scrambleText');
   const newScrambleBtn = document.getElementById('newScrambleBtn');
   const modeToggle = document.getElementById('modeToggle');
-  const caseBanner = document.getElementById('caseBanner');
-  const caseBannerName = document.getElementById('caseBannerName');
+  const hintBtn = document.getElementById('hintBtn');
+  const hintPanel = document.getElementById('hintPanel');
+  const hintNameRow = document.getElementById('hintNameRow');
+  const hintAlgRow = document.getElementById('hintAlgRow');
+  const hintName = document.getElementById('hintName');
+  const hintAlg = document.getElementById('hintAlg');
+  const hintProgress = document.getElementById('hintProgress');
   const caseFilter = document.getElementById('caseFilter');
   const caseFilterGroups = document.getElementById('caseFilterGroups');
 
   let scrambleMode = 'wca';   // 'wca' or 'trainer'
   let allowedCaseIds = [];    // empty = all cases when in trainer mode
-  let currentCaseId = null;   // which case the current scramble produces
+  let currentCase = null;     // the full case object for the current scramble
+
+  // Hint level: -1 = nothing shown, 0 = case name, 1+ = N alg chunks revealed
+  let hintLevel = -1;
 
   function generateWCAScramble() {
     const faces = ['U','D','L','R','F','B'];
@@ -1708,16 +1800,71 @@
   function generateScramble() {
     if (scrambleMode === 'trainer' && window.CubeScrambleGenerator) {
       const result = window.CubeScrambleGenerator.generate(allowedCaseIds);
-      currentCaseId = result.caseId;
+      currentCase = result;
       scrambleText.textContent = result.scramble;
-      caseBannerName.textContent = result.caseName;
-      caseBanner.style.display = '';
     } else {
-      currentCaseId = null;
+      currentCase = null;
       scrambleText.textContent = generateWCAScramble();
-      caseBanner.style.display = 'none';
     }
+    hintLevel = -1;
+    renderHint();
   }
+
+  function renderHint() {
+    if (scrambleMode !== 'trainer' || !currentCase) {
+      hintPanel.style.display = 'none';
+      return;
+    }
+    hintPanel.style.display = '';
+
+    const totalChunks = currentCase.algChunks.length;
+    const maxLevel = totalChunks + 1; // +1 because level 0 reveals just the name
+
+    if (hintLevel < 0) {
+      // Nothing revealed yet
+      hintNameRow.style.display = 'none';
+      hintAlgRow.style.display = 'none';
+      hintProgress.textContent = `Hint: 0 / ${maxLevel}`;
+      return;
+    }
+
+    // Level 0+ : show the case name
+    hintNameRow.style.display = '';
+    hintName.textContent = currentCase.caseName;
+
+    if (hintLevel === 0) {
+      hintAlgRow.style.display = 'none';
+      hintProgress.textContent = `Hint: 1 / ${maxLevel}`;
+      return;
+    }
+
+    // Level 1+ : reveal alg chunks progressively
+    hintAlgRow.style.display = '';
+    const revealed = hintLevel; // number of chunks to reveal
+    hintAlg.innerHTML = '';
+    currentCase.algChunks.forEach((chunk, i) => {
+      const span = document.createElement('span');
+      span.className = 'hint-chunk' + (i < revealed ? '' : ' locked');
+      const inner = document.createElement('span');
+      inner.className = 'hint-chunk-text';
+      // Show real text if revealed; otherwise show placeholder text the user can't read
+      // (we render the text either way so widths match, then blur-locked ones via CSS)
+      inner.textContent = chunk;
+      span.appendChild(inner);
+      hintAlg.appendChild(span);
+    });
+
+    hintProgress.textContent = `Hint: ${hintLevel + 1} / ${maxLevel}`;
+  }
+
+  function nextHint() {
+    if (scrambleMode !== 'trainer' || !currentCase) return;
+    const max = currentCase.algChunks.length;
+    if (hintLevel < max) hintLevel++;
+    renderHint();
+  }
+
+  hintBtn.addEventListener('click', nextHint);
 
   /* ===== Case filter UI =====
      Builds chip buttons for each case + group chips for quick selection.
@@ -1801,9 +1948,12 @@
     modeToggle.textContent = 'Mode: ' + (scrambleMode === 'wca' ? 'WCA Random' : 'Case Trainer');
     if (scrambleMode === 'trainer') {
       caseFilter.style.display = '';
+      hintBtn.style.display = '';
       buildCaseFilter();
     } else {
       caseFilter.style.display = 'none';
+      hintBtn.style.display = 'none';
+      hintPanel.style.display = 'none';
     }
     generateScramble();
   });

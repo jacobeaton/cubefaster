@@ -36,6 +36,56 @@ const CASES = {
 };
 
 /* ============================================================
+   CHUNK PARSER — splits an alg into hint chunks
+   ============================================================
+   Algorithms are written with parens around triggers (e.g.
+   "(R U R' U)" or "(R U2 R')"). Each parenthesized group is one
+   chunk. Anything outside parens becomes individual move chunks.
+
+   Example:
+     "(R U R' U) (R U2 R')"
+       -> ["R U R' U", "R U2 R'"]   (2 chunks)
+
+     "R U2 (R2 U' R2 U' R2) U2 R"
+       -> ["R", "U2", "R2 U' R2 U' R2", "U2", "R"]   (5 chunks)
+
+     "M2 U M2 U2 M2 U M2"   (no parens)
+       -> ["M2", "U", "M2", "U2", "M2", "U", "M2"]   (7 chunks)
+   ============================================================ */
+
+function chunkAlg(algStr) {
+  const chunks = [];
+  let i = 0;
+  const s = algStr.trim();
+
+  while (i < s.length) {
+    // Skip whitespace
+    if (s[i] === ' ') { i++; continue; }
+
+    if (s[i] === '(') {
+      // Parenthesized group = one chunk
+      const end = s.indexOf(')', i);
+      if (end === -1) {
+        // Malformed; treat rest as one chunk
+        chunks.push(s.slice(i + 1).trim());
+        break;
+      }
+      chunks.push(s.slice(i + 1, end).trim());
+      i = end + 1;
+    } else {
+      // Loose move - read until next space or paren
+      let j = i;
+      while (j < s.length && s[j] !== ' ' && s[j] !== '(' && s[j] !== ')') j++;
+      const move = s.slice(i, j).trim();
+      if (move) chunks.push(move);
+      i = j;
+    }
+  }
+
+  return chunks;
+}
+
+/* ============================================================
    SCRAMBLE GENERATION
    ============================================================
    Algorithm:
@@ -168,6 +218,7 @@ window.CubeScrambleGenerator = {
   CASES,
   generateScramble,
   pickRandomCase,
+  chunkAlg,
   // Generate a scramble + return both the scramble and which case it represents
   generate(allowedIds) {
     const caseId = pickRandomCase(allowedIds);
@@ -176,6 +227,7 @@ window.CubeScrambleGenerator = {
       caseName: CASES[caseId].name,
       caseGroup: CASES[caseId].group,
       alg: CASES[caseId].alg,
+      algChunks: chunkAlg(CASES[caseId].alg),
       scramble: generateScramble(caseId)
     };
   }

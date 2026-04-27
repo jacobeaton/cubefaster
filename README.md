@@ -22,9 +22,18 @@ cubefaster/
 The timer has two modes (toggle button in the timer panel):
 
 - **WCA Random** — generates a standard 20-move random scramble. Good for full solves.
-- **Case Trainer** — generates scrambles that produce a specific OLL or PLL case. Use the chips below to pick which cases you want to drill (e.g., just Sune + Antisune, or all 7 OLL corners). The current case name is shown above the timer.
+- **Case Trainer** — generates scrambles that produce a specific OLL or PLL case. Use the chips below to pick which cases you want to drill (e.g., just Sune + Antisune, or all 7 OLL corners).
 
 Trainer scrambles work by **inverting** each case's solving algorithm and applying random AUF + y-rotation, so the same case never produces the same scramble twice.
+
+### Progressive hints
+
+In Case Trainer mode the case name is **hidden by default** — you have to recognize it yourself. Hit the **Hint** button (or press **H**) to reveal information one stage at a time:
+
+1. First press: shows the **case name** (e.g. "Pi", "Sune")
+2. Each subsequent press: reveals **one more chunk** of the algorithm
+
+Chunks are split intelligently — triggers like `(R U R' U)` stay together as a single chunk, while loose moves are revealed individually. So a Sune (`(R U R' U) (R U2 R')`) takes 3 presses to fully reveal: name → first trigger → second trigger. A Pi (`R U2 (R2 U' R2 U' R2) U2 R`) takes 6 presses since the loose moves around the trigger reveal one at a time.
 
 ## How case images work
 
