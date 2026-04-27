@@ -176,6 +176,85 @@
 
   .palette-row { margin-bottom: 28px; }
 
+  .mode-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    padding: 4px;
+    background: var(--bg);
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .mode-btn:hover { color: var(--ink); }
+  .mode-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .arrow-style-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .arrow-style-btn {
+    flex: 1;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--rule);
+    background: var(--paper);
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .arrow-style-btn:hover { color: var(--ink); border-color: var(--ink); }
+  .arrow-style-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .arrow-help {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--bg);
+    padding: 10px 12px;
+    border-radius: 3px;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .arrow-help strong { color: var(--ink); }
+
+  .pending-start {
+    outline: 3px dashed var(--accent);
+    outline-offset: 2px;
+  }
+
   /* ===== Tools ===== */
   .tools {
     display: flex;
@@ -369,7 +448,7 @@
   </header>
 
   <div class="hint">
-    <strong>How to use:</strong> Pick a color, click stickers to paint. Name your case (e.g. <code>pi</code>, <code>sune</code>) and download. Save to your repo's <code>images/</code> folder.
+    <strong>Paint mode:</strong> Pick a color, click stickers to paint. <strong>Arrow mode:</strong> Click two top-face stickers to draw an arrow between them (great for PLL swaps). Name your case (e.g. <code>pi</code>, <code>ua-perm</code>) and download.
     <br><br>
     <strong>⚠️ Themeable note:</strong> Themed SVGs only inherit theme colors when <em>inlined</em> into the HTML — not via <code>&lt;img&gt;</code> tags (those sandbox the SVG). The main cheatsheet uses a small loader script that fetches the SVG and injects it inline, so themes will work. If you ever use the SVG outside that setup, choose <strong>Hardcoded</strong> mode.
   </div>
@@ -386,15 +465,34 @@
         </svg>
       </div>
 
-      <div class="palette-row">
+      <div class="mode-row">
+        <button class="mode-btn active" data-mode="paint">🎨 Paint</button>
+        <button class="mode-btn" data-mode="arrow">→ Arrow</button>
+      </div>
+
+      <div class="palette-row" id="paintControls">
         <div class="palette-label">Active Color</div>
         <div class="palette" id="palette"></div>
+      </div>
+
+      <div class="palette-row" id="arrowControls" style="display: none;">
+        <div class="palette-label">Arrow Color</div>
+        <div class="palette" id="arrowPalette"></div>
+
+        <div class="palette-label" style="margin-top: 18px;">Arrow Style</div>
+        <div class="arrow-style-row">
+          <button class="arrow-style-btn active" data-style="single">→ Single</button>
+          <button class="arrow-style-btn" data-style="double">↔ Double</button>
+        </div>
+
+        <div class="arrow-help">Click a top-face sticker to set the arrow's <strong>start</strong>, then click another to set the <strong>end</strong>. Click an arrow to delete it.</div>
       </div>
 
       <div class="tools">
         <button class="btn" id="resetBtn">Reset (all dark)</button>
         <button class="btn" id="fillYellowBtn">Fill Top Yellow</button>
         <button class="btn" id="rotateBtn">Rotate 90°</button>
+        <button class="btn" id="clearArrowsBtn">Clear Arrows</button>
       </div>
     </div>
 
@@ -447,7 +545,8 @@ const COLORS = {
   green:  { hex: '#3ea864', cssVar: '--case-green',  label: 'Green' },
   orange: { hex: '#e88a2e', cssVar: '--case-orange', label: 'Orange' },
   white:  { hex: '#f5f5f0', cssVar: '--case-white',  label: 'White' },
-  dark:   { hex: '#3a3a3a', cssVar: '--case-dark',   label: 'Dark' }
+  dark:   { hex: '#3a3a3a', cssVar: '--case-dark',   label: 'Dark' },
+  mark:   { hex: '#1a1a1a', cssVar: '--case-mark',   label: 'Black' }
 };
 
 // Theme palettes for the live preview only
@@ -455,27 +554,32 @@ const PREVIEW_THEMES = {
   default: {
     bg: '#faf7f2',
     yellow: '#f5d800', red: '#d64545', blue: '#3b6fb5',
-    green: '#3ea864', orange: '#e88a2e', white: '#f5f5f0', dark: '#3a3a3a'
+    green: '#3ea864', orange: '#e88a2e', white: '#f5f5f0', dark: '#3a3a3a',
+    mark: '#1a1a1a'
   },
   dracula: {
     bg: '#282a36',
     yellow: '#f1fa8c', red: '#ff5555', blue: '#bd93f9',
-    green: '#50fa7b', orange: '#ffb86c', white: '#f8f8f2', dark: '#44475a'
+    green: '#50fa7b', orange: '#ffb86c', white: '#f8f8f2', dark: '#44475a',
+    mark: '#f8f8f2'
   },
   nord: {
     bg: '#2e3440',
     yellow: '#ebcb8b', red: '#bf616a', blue: '#81a1c1',
-    green: '#a3be8c', orange: '#d08770', white: '#eceff4', dark: '#4c566a'
+    green: '#a3be8c', orange: '#d08770', white: '#eceff4', dark: '#4c566a',
+    mark: '#eceff4'
   },
   monokai: {
     bg: '#272822',
     yellow: '#f4bf75', red: '#f92672', blue: '#66d9ef',
-    green: '#a6e22e', orange: '#fd971f', white: '#f8f8f2', dark: '#49483e'
+    green: '#a6e22e', orange: '#fd971f', white: '#f8f8f2', dark: '#49483e',
+    mark: '#f8f8f2'
   },
   gruvbox: {
     bg: '#282828',
     yellow: '#fabd2f', red: '#fb4934', blue: '#83a598',
-    green: '#b8bb26', orange: '#fe8019', white: '#ebdbb2', dark: '#504945'
+    green: '#b8bb26', orange: '#fe8019', white: '#ebdbb2', dark: '#504945',
+    mark: '#ebdbb2'
   }
 };
 
@@ -586,17 +690,73 @@ pushSideStrip('right');
    STATE
    ============================================================ */
 let activeColor = 'yellow';
+let arrowColor = 'mark';
+let arrowStyle = 'single'; // 'single' or 'double'
 let stickerColors = {}; // id -> color key
+let arrows = [];        // [{ from, to, color, style }]
+let pendingArrowStart = null;
+let toolMode = 'paint'; // 'paint' or 'arrow'
 let outputMode = 'themed'; // or 'hex'
 let previewTheme = 'default';
 
 // Init all stickers to dark
 STICKERS.forEach(s => stickerColors[s.id] = 'dark');
 
+// Helper: get center point of a sticker in SVG coords
+function stickerCenter(sticker) {
+  if (sticker.shape === 'rect') {
+    return { x: sticker.x + TOP_SIZE / 2, y: sticker.y + TOP_SIZE / 2 };
+  }
+  // polygon: average all corner points
+  const pts = sticker.points.split(' ').map(p => p.split(',').map(Number));
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return { x: cx, y: cy };
+}
+
+// Helper: shrink the line segment between two stickers so the arrow doesn't overlap them
+function shrinkLine(p1, p2, padStart, padEnd) {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  if (len === 0) return { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
+  const ux = dx / len;
+  const uy = dy / len;
+  return {
+    x1: p1.x + ux * padStart,
+    y1: p1.y + uy * padStart,
+    x2: p2.x - ux * padEnd,
+    y2: p2.y - uy * padEnd
+  };
+}
+
 /* ============================================================
    PALETTE UI
    ============================================================ */
 const paletteEl = document.getElementById('palette');
+const arrowPaletteEl = document.getElementById('arrowPalette');
+
+function buildPalette(container, getActive, setActive) {
+  Object.entries(COLORS).forEach(([key, c]) => {
+    if (key === 'dark') return; // skip dark for arrows; allow for paint
+    const el = document.createElement('div');
+    el.className = 'swatch' + (key === getActive() ? ' active' : '');
+    el.style.background = c.hex;
+    el.dataset.color = key;
+    el.title = c.label;
+    const lbl = document.createElement('span');
+    lbl.className = 'swatch-label';
+    lbl.textContent = c.label;
+    el.appendChild(lbl);
+    el.addEventListener('click', () => {
+      setActive(key);
+      container.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === key));
+    });
+    container.appendChild(el);
+  });
+}
+
+// Paint palette includes dark
 Object.entries(COLORS).forEach(([key, c]) => {
   const el = document.createElement('div');
   el.className = 'swatch' + (key === activeColor ? ' active' : '');
@@ -609,9 +769,38 @@ Object.entries(COLORS).forEach(([key, c]) => {
   el.appendChild(lbl);
   el.addEventListener('click', () => {
     activeColor = key;
-    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === key));
+    paletteEl.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === key));
   });
   paletteEl.appendChild(el);
+});
+
+// Arrow palette excludes dark (no point in a dark arrow)
+buildPalette(arrowPaletteEl, () => arrowColor, (k) => { arrowColor = k; });
+
+document.querySelectorAll('.arrow-style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.arrow-style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    arrowStyle = btn.dataset.style;
+  });
+});
+
+/* ============================================================
+   MODE TOGGLE
+   ============================================================ */
+const paintControls = document.getElementById('paintControls');
+const arrowControls = document.getElementById('arrowControls');
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    toolMode = btn.dataset.mode;
+    paintControls.style.display = toolMode === 'paint' ? '' : 'none';
+    arrowControls.style.display = toolMode === 'arrow' ? '' : 'none';
+    pendingArrowStart = null;
+    renderEditor();
+  });
 });
 
 /* ============================================================
@@ -636,18 +825,123 @@ function makeShapeEl(s, fill) {
   return el;
 }
 
+function buildArrowMarker(svg, id, color) {
+  // Need an SVG <defs> with a <marker> for the arrowhead
+  let defs = svg.querySelector('defs');
+  if (!defs) {
+    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svg.appendChild(defs);
+  }
+  // Avoid duplicates
+  if (svg.querySelector(`#${id}`)) return;
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', id);
+  marker.setAttribute('viewBox', '0 0 10 10');
+  marker.setAttribute('refX', '8');
+  marker.setAttribute('refY', '5');
+  marker.setAttribute('markerWidth', '3.5');
+  marker.setAttribute('markerHeight', '3.5');
+  marker.setAttribute('orient', 'auto-start-reverse');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+  path.setAttribute('fill', color);
+  marker.appendChild(path);
+  defs.appendChild(marker);
+}
+
+function drawArrow(svg, arrow, fillResolver, idSuffix) {
+  const fromS = STICKERS.find(s => s.id === arrow.from);
+  const toS = STICKERS.find(s => s.id === arrow.to);
+  if (!fromS || !toS) return;
+  const p1 = stickerCenter(fromS);
+  const p2 = stickerCenter(toS);
+  // Double arrows pad both ends so arrowheads fit symmetrically
+  const padStart = arrow.style === 'double' ? 7 : 5;
+  const padEnd = 7;
+  const seg = shrinkLine(p1, p2, padStart, padEnd);
+
+  const color = fillResolver(arrow.color);
+  const markerId = `arrowhead-${arrow.color}-${idSuffix}`;
+  buildArrowMarker(svg, markerId, color);
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', seg.x1);
+  line.setAttribute('y1', seg.y1);
+  line.setAttribute('x2', seg.x2);
+  line.setAttribute('y2', seg.y2);
+  line.setAttribute('stroke', color);
+  line.setAttribute('stroke-width', '1.6');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('marker-end', `url(#${markerId})`);
+  if (arrow.style === 'double') {
+    line.setAttribute('marker-start', `url(#${markerId})`);
+  }
+  line.dataset.arrowIdx = arrows.indexOf(arrow);
+  return line;
+}
+
 function renderEditor() {
   editorSvg.innerHTML = '';
+  // Stickers first (so arrows draw on top)
   STICKERS.forEach(s => {
     const el = makeShapeEl(s, COLORS[stickerColors[s.id]].hex);
     el.dataset.id = s.id;
     el.style.cursor = 'pointer';
-    el.addEventListener('click', () => {
-      stickerColors[s.id] = activeColor;
-      el.setAttribute('fill', COLORS[activeColor].hex);
-      renderOutput();
+
+    // Highlight pending arrow start
+    if (toolMode === 'arrow' && pendingArrowStart === s.id) {
+      el.style.filter = 'drop-shadow(0 0 4px var(--accent))';
+      el.setAttribute('stroke', '#d64545');
+      el.setAttribute('stroke-width', '2');
+      el.setAttribute('stroke-dasharray', '3,2');
+    }
+
+    el.addEventListener('click', (e) => {
+      if (toolMode === 'paint') {
+        stickerColors[s.id] = activeColor;
+        renderEditor();
+        renderOutput();
+      } else {
+        // Arrow mode: only top-face stickers eligible
+        if (s.group !== 'top') return;
+        if (pendingArrowStart === null) {
+          pendingArrowStart = s.id;
+          renderEditor();
+        } else if (pendingArrowStart === s.id) {
+          // Click same sticker to cancel
+          pendingArrowStart = null;
+          renderEditor();
+        } else {
+          arrows.push({ from: pendingArrowStart, to: s.id, color: arrowColor, style: arrowStyle });
+          pendingArrowStart = null;
+          renderEditor();
+          renderOutput();
+        }
+      }
     });
     editorSvg.appendChild(el);
+  });
+
+  // Arrows on top
+  arrows.forEach((arrow, idx) => {
+    const line = drawArrow(editorSvg, arrow, (key) => COLORS[key].hex, `edit-${idx}`);
+    if (!line) return;
+    line.style.cursor = 'pointer';
+    line.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      arrows.splice(idx, 1);
+      renderEditor();
+      renderOutput();
+    });
+    // Also allow plain click to delete in arrow mode (easier on touch)
+    line.addEventListener('click', (e) => {
+      if (toolMode !== 'arrow') return;
+      e.stopPropagation();
+      arrows.splice(idx, 1);
+      renderEditor();
+      renderOutput();
+    });
+    editorSvg.appendChild(line);
   });
 }
 
@@ -671,11 +965,30 @@ function renderPreview() {
     const el = makeShapeEl(s, getPreviewFill(stickerColors[s.id]));
     previewSvg.appendChild(el);
   });
+  arrows.forEach((arrow, idx) => {
+    const line = drawArrow(previewSvg, arrow, (key) => theme[key], `prev-${idx}`);
+    if (line) previewSvg.appendChild(line);
+  });
 }
 
 function buildOutputSVG() {
   const lines = [];
   lines.push('<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="cube-case">');
+
+  // Build defs for arrowhead markers (one per unique arrow color used)
+  const usedArrowColors = [...new Set(arrows.map(a => a.color))];
+  if (usedArrowColors.length > 0) {
+    lines.push('  <defs>');
+    usedArrowColors.forEach(colorKey => {
+      const fill = outputMode === 'hex'
+        ? COLORS[colorKey].hex
+        : `var(${COLORS[colorKey].cssVar})`;
+      lines.push(`    <marker id="ah-${colorKey}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.5" markerHeight="3.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${fill}"/></marker>`);
+    });
+    lines.push('  </defs>');
+  }
+
+  // Stickers
   STICKERS.forEach(s => {
     const colorKey = stickerColors[s.id];
     const fill = outputMode === 'hex'
@@ -687,6 +1000,24 @@ function buildOutputSVG() {
       lines.push(`  <rect x="${s.x}" y="${s.y}" width="${TOP_SIZE}" height="${TOP_SIZE}" rx="${STICKER_RX}" fill="${fill}"/>`);
     }
   });
+
+  // Arrows on top
+  arrows.forEach(arrow => {
+    const fromS = STICKERS.find(s => s.id === arrow.from);
+    const toS = STICKERS.find(s => s.id === arrow.to);
+    if (!fromS || !toS) return;
+    const p1 = stickerCenter(fromS);
+    const p2 = stickerCenter(toS);
+    const padStart = arrow.style === 'double' ? 7 : 5;
+    const padEnd = 7;
+    const seg = shrinkLine(p1, p2, padStart, padEnd);
+    const stroke = outputMode === 'hex'
+      ? COLORS[arrow.color].hex
+      : `var(${COLORS[arrow.color].cssVar})`;
+    const markerStart = arrow.style === 'double' ? ` marker-start="url(#ah-${arrow.color})"` : '';
+    lines.push(`  <line x1="${seg.x1.toFixed(2)}" y1="${seg.y1.toFixed(2)}" x2="${seg.x2.toFixed(2)}" y2="${seg.y2.toFixed(2)}" stroke="${stroke}" stroke-width="1.6" stroke-linecap="round"${markerStart} marker-end="url(#ah-${arrow.color})"/>`);
+  });
+
   lines.push('</svg>');
   return lines.join('\n');
 }
@@ -731,6 +1062,8 @@ Object.keys(PREVIEW_THEMES).forEach(name => {
    ============================================================ */
 document.getElementById('resetBtn').addEventListener('click', () => {
   STICKERS.forEach(s => stickerColors[s.id] = 'dark');
+  arrows = [];
+  pendingArrowStart = null;
   renderEditor();
   renderOutput();
 });
@@ -741,36 +1074,58 @@ document.getElementById('fillYellowBtn').addEventListener('click', () => {
   renderOutput();
 });
 
+document.getElementById('clearArrowsBtn').addEventListener('click', () => {
+  arrows = [];
+  pendingArrowStart = null;
+  renderEditor();
+  renderOutput();
+});
+
 document.getElementById('rotateBtn').addEventListener('click', () => {
   // Rotate the entire case 90 degrees clockwise
-  // Top face: r0c0 -> r0c2, r0c2 -> r2c2, r2c2 -> r2c0, r2c0 -> r0c0
-  // Sides cycle: back -> right -> front -> left -> back
   const newColors = {};
 
-  // Top face rotation (clockwise 90°)
-  // (r,c) -> (c, 2-r)
+  // Top face (r,c) -> (c, 2-r)
+  const remapTop = (id) => {
+    const m = id.match(/^top-(\d)-(\d)$/);
+    if (!m) return id;
+    const r = +m[1], c = +m[2];
+    return `top-${c}-${2-r}`;
+  };
+
   for (let r = 0; r < 3; r++) {
     for (let c = 0; c < 3; c++) {
-      const oldId = `top-${r}-${c}`;
-      const newId = `top-${c}-${2-r}`;
-      newColors[newId] = stickerColors[oldId];
+      newColors[remapTop(`top-${r}-${c}`)] = stickerColors[`top-${r}-${c}`];
     }
   }
 
-  // Side strip rotation: back -> right -> front -> left -> back
-  // Index mapping for clockwise rotation:
-  //   back[c]   -> right[c]
-  //   right[r]  -> front[2-r]
-  //   front[c]  -> left[2-c]
-  //   left[r]   -> back[r]
+  // Side strips: back -> right -> front -> left -> back
+  // Within a strip, indices may need to flip for fronts/lefts
+  const remapSide = (id) => {
+    const m = id.match(/^(back|front|left|right)-(\d)$/);
+    if (!m) return id;
+    const side = m[1], i = +m[2];
+    if (side === 'back')   return `right-${i}`;
+    if (side === 'right')  return `front-${2-i}`;
+    if (side === 'front')  return `left-${2-i}`;
+    if (side === 'left')   return `back-${i}`;
+  };
+
   for (let i = 0; i < 3; i++) {
-    newColors[`right-${i}`] = stickerColors[`back-${i}`];
-    newColors[`front-${2-i}`] = stickerColors[`right-${i}`];
-    newColors[`left-${2-i}`] = stickerColors[`front-${i}`];
-    newColors[`back-${i}`] = stickerColors[`left-${i}`];
+    ['back','front','left','right'].forEach(side => {
+      newColors[remapSide(`${side}-${i}`)] = stickerColors[`${side}-${i}`];
+    });
   }
 
   stickerColors = newColors;
+
+  // Remap arrow endpoints too
+  arrows = arrows.map(a => ({
+    from: remapTop(a.from),
+    to: remapTop(a.to),
+    color: a.color
+  }));
+
   renderEditor();
   renderOutput();
 });
