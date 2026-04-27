@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cube Case Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --ink: #1a1a1a;
+    --ink-soft: #4a4a4a;
+    --muted: #7a7a7a;
+    --accent: #d64545;
+    --paper: #ffffff;
+    --rule: #e6e0d4;
+    --code-bg: #1a1a1a;
+    --code-ink: #f8f8f2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  header {
+    margin-bottom: 32px;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 16px;
+    position: relative;
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 60px;
+    height: 6px;
+    background: var(--accent);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 44px;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ===== Layout ===== */
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 800px) {
+    .workspace { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .panel h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 18px;
+    font-weight: 700;
+  }
+
+  /* ===== Editor ===== */
+  .editor-svg-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--bg);
+    border-radius: 4px;
+  }
+
+  .editor-svg {
+    width: 280px;
+    height: 280px;
+  }
+
+  .editor-svg rect,
+  .editor-svg polygon {
+    cursor: pointer;
+    transition: opacity 0.1s;
+  }
+
+  .editor-svg rect:hover,
+  .editor-svg polygon:hover { opacity: 0.75; }
+
+  /* ===== Color Palette ===== */
+  .palette-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .palette {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .swatch {
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.1s, border-color 0.1s;
+    position: relative;
+  }
+
+  .swatch:hover { transform: scale(1.08); }
+  .swatch.active { border-color: var(--ink); }
+
+  .swatch-label {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .palette-row { margin-bottom: 28px; }
+
+  /* ===== Tools ===== */
+  .tools {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--ink); color: var(--paper); }
+
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+
+  .btn.primary:hover { background: var(--ink); border-color: var(--ink); }
+
+  /* ===== Output ===== */
+  .toggle-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 4px;
+    background: var(--bg);
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--muted);
+  }
+
+  .toggle-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .preview-wrap {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .preview-svg {
+    width: 200px;
+    height: 200px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px;
+    border-radius: 3px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    margin: 0 0 12px;
+    max-height: 320px;
+  }
+
+  .copy-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .copy-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .copy-msg.success { color: #2d6a4f; font-weight: 600; }
+
+  .filename-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 12px;
+  }
+
+  .filename-input-wrap {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0 10px;
+    transition: border-color 0.15s;
+  }
+
+  .filename-input-wrap:focus-within { border-color: var(--accent); }
+
+  .filename-input-wrap input {
+    border: none;
+    background: transparent;
+    flex-grow: 1;
+    padding: 8px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .filename-suffix {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 6px;
+    border-left: 1px solid var(--rule);
+    margin-left: 6px;
+  }
+
+  .hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: #fff3b8;
+    padding: 12px 16px;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    border-left: 3px solid #f5b300;
+  }
+
+  .hint strong { color: var(--ink); }
+
+  /* ===== Theme preview chips ===== */
+  .theme-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .theme-chip {
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+
+  .theme-chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">Cube Case Editor</div>
+    <h1>Build a Case.</h1>
+    <p class="tagline">Click stickers to paint colors, export themeable SVG.</p>
+  </header>
+
+  <div class="hint">
+    <strong>How to use:</strong> Pick a color, click stickers to paint. Name your case (e.g. <code>pi</code>, <code>sune</code>) and download. Save to your repo's <code>images/</code> folder.
+    <br><br>
+    <strong>⚠️ Themeable note:</strong> Themed SVGs only inherit theme colors when <em>inlined</em> into the HTML — not via <code>&lt;img&gt;</code> tags (those sandbox the SVG). The main cheatsheet uses a small loader script that fetches the SVG and injects it inline, so themes will work. If you ever use the SVG outside that setup, choose <strong>Hardcoded</strong> mode.
+  </div>
+
+  <div class="workspace">
+
+    <!-- LEFT: EDITOR -->
+    <div class="panel">
+      <h2>Editor</h2>
+
+      <div class="editor-svg-wrap">
+        <svg class="editor-svg" id="editorSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stickers will be drawn here by JS -->
+        </svg>
+      </div>
+
+      <div class="palette-row">
+        <div class="palette-label">Active Color</div>
+        <div class="palette" id="palette"></div>
+      </div>
+
+      <div class="tools">
+        <button class="btn" id="resetBtn">Reset (all dark)</button>
+        <button class="btn" id="fillYellowBtn">Fill Top Yellow</button>
+        <button class="btn" id="rotateBtn">Rotate 90°</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: OUTPUT -->
+    <div class="panel">
+      <h2>Output</h2>
+
+      <div class="toggle-row">
+        <button class="toggle-btn active" data-mode="themed">Themeable (CSS vars)</button>
+        <button class="toggle-btn" data-mode="hex">Hardcoded (hex)</button>
+      </div>
+
+      <div class="preview-wrap">
+        <svg class="preview-svg" id="previewSvg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
+      <div class="palette-label">Preview Theme (preview only — output stays themeable)</div>
+      <div class="theme-chips" id="themeChips"></div>
+
+      <div class="palette-label" style="margin-top: 20px;">SVG Code</div>
+      <pre id="output"></pre>
+
+      <div class="filename-row">
+        <label for="filename" class="palette-label" style="margin: 0;">Filename</label>
+        <div class="filename-input-wrap">
+          <input type="text" id="filename" value="pi" placeholder="case-name" autocomplete="off"/>
+          <span class="filename-suffix">.svg</span>
+        </div>
+      </div>
+
+      <div class="copy-row">
+        <button class="btn primary" id="downloadBtn">Download SVG</button>
+        <button class="btn" id="copyBtn">Copy SVG</button>
+        <span class="copy-msg" id="copyMsg"></span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   COLORS & THEME PALETTES
+   ============================================================ */
+const COLORS = {
+  yellow: { hex: '#f5d800', cssVar: '--case-yellow', label: 'Yellow' },
+  red:    { hex: '#d64545', cssVar: '--case-red',    label: 'Red' },
+  blue:   { hex: '#3b6fb5', cssVar: '--case-blue',   label: 'Blue' },
+  green:  { hex: '#3ea864', cssVar: '--case-green',  label: 'Green' },
+  orange: { hex: '#e88a2e', cssVar: '--case-orange', label: 'Orange' },
+  white:  { hex: '#f5f5f0', cssVar: '--case-white',  label: 'White' },
+  dark:   { hex: '#3a3a3a', cssVar: '--case-dark',   label: 'Dark' }
+};
+
+// Theme palettes for the live preview only
+const PREVIEW_THEMES = {
+  default: {
+    bg: '#faf7f2',
+    yellow: '#f5d800', red: '#d64545', blue: '#3b6fb5',
+    green: '#3ea864', orange: '#e88a2e', white: '#f5f5f0', dark: '#3a3a3a'
+  },
+  dracula: {
+    bg: '#282a36',
+    yellow: '#f1fa8c', red: '#ff5555', blue: '#bd93f9',
+    green: '#50fa7b', orange: '#ffb86c', white: '#f8f8f2', dark: '#44475a'
+  },
+  nord: {
+    bg: '#2e3440',
+    yellow: '#ebcb8b', red: '#bf616a', blue: '#81a1c1',
+    green: '#a3be8c', orange: '#d08770', white: '#eceff4', dark: '#4c566a'
+  },
+  monokai: {
+    bg: '#272822',
+    yellow: '#f4bf75', red: '#f92672', blue: '#66d9ef',
+    green: '#a6e22e', orange: '#fd971f', white: '#f8f8f2', dark: '#49483e'
+  },
+  gruvbox: {
+    bg: '#282828',
+    yellow: '#fabd2f', red: '#fb4934', blue: '#83a598',
+    green: '#b8bb26', orange: '#fe8019', white: '#ebdbb2', dark: '#504945'
+  }
+};
+
+/* ============================================================
+   GRID DEFINITION
+   ============================================================ */
+// Layout matches the reference image:
+//   - 3x3 top face in the center
+//   - 3-sticker strips on top, bottom, left, right (top row of each side face)
+// Total: 9 + 4*3 = 21 stickers
+//
+// Coordinate system: 120x120 viewBox
+// Sticker size: 20x20, gap: 2px
+// Top face occupies x=30..94, y=30..94
+// Side strips wrap around outside
+
+// Each sticker: { id, shape, x, y or points, group, position }
+// shape: 'rect' (top face) or 'polygon' (perspective side strip)
+// group: 'top' | 'back' | 'front' | 'left' | 'right'
+const STICKERS = [];
+
+// Top face 3x3 — centered in viewBox at (30,30) to (94,94)
+// Each top sticker is 20x20 with 2px gaps.
+//
+// Side strips are PERSPECTIVE TRAPEZOIDS — they taper inward as they recede
+// from the top face, giving the cube a 3D "looking down at it" appearance.
+// We render them as <polygon> shapes instead of <rect>.
+//
+// Geometry: each side strip sticker is a quadrilateral where:
+//   - Inner edge (touching the top face): WIDER, matches top sticker (20)
+//   - Outer edge: NARROWER, tapers inward by SIDE_TAPER on each side
+//   - Depth: ~14px (foreshortened)
+//
+// Total bounding box: roughly 4..116 in both dimensions.
+
+const STICKER_RX = 3;
+const TOP_SIZE = 20;
+const TOP_GAP = 2;
+const TOP_START = 30;       // x/y of top-left top sticker
+const SIDE_DEPTH = 14;      // how "tall" the trapezoid is (foreshortened)
+const SIDE_INNER_GAP = 2;   // gap between top face and side strip (inner edge)
+const SIDE_TAPER = 3;       // how much each outer corner tapers inward
+
+for (let row = 0; row < 3; row++) {
+  for (let col = 0; col < 3; col++) {
+    STICKERS.push({
+      id: `top-${row}-${col}`,
+      shape: 'rect',
+      x: TOP_START + col * (TOP_SIZE + TOP_GAP),
+      y: TOP_START + row * (TOP_SIZE + TOP_GAP),
+      group: 'top',
+      position: `r${row}c${col}`
+    });
+  }
+}
+
+// Helper: build a side strip with 3 trapezoidal stickers tapering inward as they recede.
+function pushSideStrip(side) {
+  for (let i = 0; i < 3; i++) {
+    // Inner edge (wider, near top face)
+    const innerStart = TOP_START + i * (TOP_SIZE + TOP_GAP);
+    const innerEnd = innerStart + TOP_SIZE;
+
+    // Outer edge (narrower, away from top face)
+    const outerStart = innerStart + SIDE_TAPER;
+    const outerEnd = innerEnd - SIDE_TAPER;
+
+    let points;
+    if (side === 'back') {
+      // Inner edge along bottom of strip (closer to top face)
+      // Outer edge along top of strip (farther from top face)
+      const innerY = TOP_START - SIDE_INNER_GAP;
+      const outerY = innerY - SIDE_DEPTH;
+      points = `${outerStart},${outerY} ${outerEnd},${outerY} ${innerEnd},${innerY} ${innerStart},${innerY}`;
+    } else if (side === 'front') {
+      // Inner edge along top of strip, outer below
+      const topEnd = TOP_START + 3 * TOP_SIZE + 2 * TOP_GAP;
+      const innerY = topEnd + SIDE_INNER_GAP;
+      const outerY = innerY + SIDE_DEPTH;
+      points = `${innerStart},${innerY} ${innerEnd},${innerY} ${outerEnd},${outerY} ${outerStart},${outerY}`;
+    } else if (side === 'left') {
+      const innerX = TOP_START - SIDE_INNER_GAP;
+      const outerX = innerX - SIDE_DEPTH;
+      points = `${outerX},${outerStart} ${innerX},${innerStart} ${innerX},${innerEnd} ${outerX},${outerEnd}`;
+    } else if (side === 'right') {
+      const topRight = TOP_START + 3 * TOP_SIZE + 2 * TOP_GAP;
+      const innerX = topRight + SIDE_INNER_GAP;
+      const outerX = innerX + SIDE_DEPTH;
+      points = `${innerX},${innerStart} ${outerX},${outerStart} ${outerX},${outerEnd} ${innerX},${innerEnd}`;
+    }
+
+    STICKERS.push({
+      id: `${side}-${i}`,
+      shape: 'polygon',
+      points,
+      group: side,
+      position: `i${i}`
+    });
+  }
+}
+
+pushSideStrip('back');
+pushSideStrip('front');
+pushSideStrip('left');
+pushSideStrip('right');
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let activeColor = 'yellow';
+let stickerColors = {}; // id -> color key
+let outputMode = 'themed'; // or 'hex'
+let previewTheme = 'default';
+
+// Init all stickers to dark
+STICKERS.forEach(s => stickerColors[s.id] = 'dark');
+
+/* ============================================================
+   PALETTE UI
+   ============================================================ */
+const paletteEl = document.getElementById('palette');
+Object.entries(COLORS).forEach(([key, c]) => {
+  const el = document.createElement('div');
+  el.className = 'swatch' + (key === activeColor ? ' active' : '');
+  el.style.background = c.hex;
+  el.dataset.color = key;
+  el.title = c.label;
+  const lbl = document.createElement('span');
+  lbl.className = 'swatch-label';
+  lbl.textContent = c.label;
+  el.appendChild(lbl);
+  el.addEventListener('click', () => {
+    activeColor = key;
+    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.color === key));
+  });
+  paletteEl.appendChild(el);
+});
+
+/* ============================================================
+   EDITOR SVG
+   ============================================================ */
+const editorSvg = document.getElementById('editorSvg');
+
+function makeShapeEl(s, fill) {
+  if (s.shape === 'polygon') {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    el.setAttribute('points', s.points);
+    el.setAttribute('fill', fill);
+    return el;
+  }
+  const el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  el.setAttribute('x', s.x);
+  el.setAttribute('y', s.y);
+  el.setAttribute('width', TOP_SIZE);
+  el.setAttribute('height', TOP_SIZE);
+  el.setAttribute('rx', STICKER_RX);
+  el.setAttribute('fill', fill);
+  return el;
+}
+
+function renderEditor() {
+  editorSvg.innerHTML = '';
+  STICKERS.forEach(s => {
+    const el = makeShapeEl(s, COLORS[stickerColors[s.id]].hex);
+    el.dataset.id = s.id;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => {
+      stickerColors[s.id] = activeColor;
+      el.setAttribute('fill', COLORS[activeColor].hex);
+      renderOutput();
+    });
+    editorSvg.appendChild(el);
+  });
+}
+
+renderEditor();
+
+/* ============================================================
+   PREVIEW + OUTPUT
+   ============================================================ */
+const previewSvg = document.getElementById('previewSvg');
+const outputEl = document.getElementById('output');
+
+function getPreviewFill(colorKey) {
+  return PREVIEW_THEMES[previewTheme][colorKey];
+}
+
+function renderPreview() {
+  const theme = PREVIEW_THEMES[previewTheme];
+  previewSvg.parentElement.style.background = theme.bg;
+  previewSvg.innerHTML = '';
+  STICKERS.forEach(s => {
+    const el = makeShapeEl(s, getPreviewFill(stickerColors[s.id]));
+    previewSvg.appendChild(el);
+  });
+}
+
+function buildOutputSVG() {
+  const lines = [];
+  lines.push('<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="cube-case">');
+  STICKERS.forEach(s => {
+    const colorKey = stickerColors[s.id];
+    const fill = outputMode === 'hex'
+      ? COLORS[colorKey].hex
+      : `var(${COLORS[colorKey].cssVar})`;
+    if (s.shape === 'polygon') {
+      lines.push(`  <polygon points="${s.points}" fill="${fill}"/>`);
+    } else {
+      lines.push(`  <rect x="${s.x}" y="${s.y}" width="${TOP_SIZE}" height="${TOP_SIZE}" rx="${STICKER_RX}" fill="${fill}"/>`);
+    }
+  });
+  lines.push('</svg>');
+  return lines.join('\n');
+}
+
+function renderOutput() {
+  renderPreview();
+  outputEl.textContent = buildOutputSVG();
+}
+
+renderOutput();
+
+/* ============================================================
+   TOGGLES
+   ============================================================ */
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    outputMode = btn.dataset.mode;
+    renderOutput();
+  });
+});
+
+/* ============================================================
+   THEME CHIPS
+   ============================================================ */
+const themeChipsEl = document.getElementById('themeChips');
+Object.keys(PREVIEW_THEMES).forEach(name => {
+  const chip = document.createElement('button');
+  chip.className = 'theme-chip' + (name === previewTheme ? ' active' : '');
+  chip.textContent = name;
+  chip.addEventListener('click', () => {
+    previewTheme = name;
+    document.querySelectorAll('.theme-chip').forEach(c => c.classList.toggle('active', c.textContent === name));
+    renderPreview();
+  });
+  themeChipsEl.appendChild(chip);
+});
+
+/* ============================================================
+   TOOLS
+   ============================================================ */
+document.getElementById('resetBtn').addEventListener('click', () => {
+  STICKERS.forEach(s => stickerColors[s.id] = 'dark');
+  renderEditor();
+  renderOutput();
+});
+
+document.getElementById('fillYellowBtn').addEventListener('click', () => {
+  STICKERS.filter(s => s.group === 'top').forEach(s => stickerColors[s.id] = 'yellow');
+  renderEditor();
+  renderOutput();
+});
+
+document.getElementById('rotateBtn').addEventListener('click', () => {
+  // Rotate the entire case 90 degrees clockwise
+  // Top face: r0c0 -> r0c2, r0c2 -> r2c2, r2c2 -> r2c0, r2c0 -> r0c0
+  // Sides cycle: back -> right -> front -> left -> back
+  const newColors = {};
+
+  // Top face rotation (clockwise 90°)
+  // (r,c) -> (c, 2-r)
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const oldId = `top-${r}-${c}`;
+      const newId = `top-${c}-${2-r}`;
+      newColors[newId] = stickerColors[oldId];
+    }
+  }
+
+  // Side strip rotation: back -> right -> front -> left -> back
+  // Index mapping for clockwise rotation:
+  //   back[c]   -> right[c]
+  //   right[r]  -> front[2-r]
+  //   front[c]  -> left[2-c]
+  //   left[r]   -> back[r]
+  for (let i = 0; i < 3; i++) {
+    newColors[`right-${i}`] = stickerColors[`back-${i}`];
+    newColors[`front-${2-i}`] = stickerColors[`right-${i}`];
+    newColors[`left-${2-i}`] = stickerColors[`front-${i}`];
+    newColors[`back-${i}`] = stickerColors[`left-${i}`];
+  }
+
+  stickerColors = newColors;
+  renderEditor();
+  renderOutput();
+});
+
+/* ============================================================
+   COPY + DOWNLOAD
+   ============================================================ */
+const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const copyMsg = document.getElementById('copyMsg');
+const filenameInput = document.getElementById('filename');
+
+function showMsg(text) {
+  copyMsg.textContent = text;
+  copyMsg.classList.add('success');
+  setTimeout(() => {
+    copyMsg.textContent = '';
+    copyMsg.classList.remove('success');
+  }, 2200);
+}
+
+function sanitizeFilename(name) {
+  return (name || 'case').trim().toLowerCase()
+    .replace(/[^a-z0-9-_]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'case';
+}
+
+copyBtn.addEventListener('click', async () => {
+  const text = buildOutputSVG();
+  try {
+    await navigator.clipboard.writeText(text);
+    showMsg('✓ Copied to clipboard');
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showMsg('✓ Copied (fallback)');
+  }
+});
+
+downloadBtn.addEventListener('click', () => {
+  const text = buildOutputSVG();
+  const name = sanitizeFilename(filenameInput.value);
+  const blob = new Blob([text], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}.svg`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showMsg(`✓ Downloaded ${name}.svg`);
+});
+</script>
+
+</body>
+</html>

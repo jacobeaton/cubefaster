@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
+    /* Default: Newsprint (warm editorial cream) */
     --bg: #faf7f2;
     --ink: #1a1a1a;
     --ink-soft: #4a4a4a;
@@ -21,6 +22,273 @@
     --rule: #e6e0d4;
     --code-bg: #f0ece1;
     --highlight: #fff3b8;
+
+    /* Cube case sticker colors */
+    --case-yellow: #f5d800;
+    --case-red:    #d64545;
+    --case-blue:   #3b6fb5;
+    --case-green:  #3ea864;
+    --case-orange: #e88a2e;
+    --case-white:  #f5f5f0;
+    --case-dark:   #3a3a3a;
+  }
+
+  /* === Dracula === */
+  [data-theme="dracula"] {
+    --bg: #282a36;
+    --ink: #f8f8f2;
+    --ink-soft: #e0e0d8;
+    --muted: #6272a4;
+    --accent: #ff79c6;
+    --accent-2: #f1fa8c;
+    --accent-3: #50fa7b;
+    --accent-4: #bd93f9;
+    --paper: #343746;
+    --rule: #44475a;
+    --code-bg: #21222c;
+    --highlight: #44475a;
+    --case-yellow: #f1fa8c;
+    --case-red: #ff5555;
+    --case-blue: #bd93f9;
+    --case-green: #50fa7b;
+    --case-orange: #ffb86c;
+    --case-white: #f8f8f2;
+    --case-dark: #44475a;
+  }
+
+  /* === Nord === */
+  [data-theme="nord"] {
+    --bg: #2e3440;
+    --ink: #eceff4;
+    --ink-soft: #d8dee9;
+    --muted: #7b8394;
+    --accent: #bf616a;
+    --accent-2: #ebcb8b;
+    --accent-3: #a3be8c;
+    --accent-4: #88c0d0;
+    --paper: #3b4252;
+    --rule: #4c566a;
+    --code-bg: #292e39;
+    --highlight: #434c5e;
+    --case-yellow: #ebcb8b;
+    --case-red: #bf616a;
+    --case-blue: #81a1c1;
+    --case-green: #a3be8c;
+    --case-orange: #d08770;
+    --case-white: #eceff4;
+    --case-dark: #4c566a;
+  }
+
+  /* === Solarized Dark === */
+  [data-theme="solarized-dark"] {
+    --bg: #002b36;
+    --ink: #eee8d5;
+    --ink-soft: #93a1a1;
+    --muted: #657b83;
+    --accent: #dc322f;
+    --accent-2: #b58900;
+    --accent-3: #859900;
+    --accent-4: #268bd2;
+    --paper: #073642;
+    --rule: #586e75;
+    --code-bg: #00212b;
+    --highlight: #094352;
+    --case-yellow: #b58900;
+    --case-red: #dc322f;
+    --case-blue: #268bd2;
+    --case-green: #859900;
+    --case-orange: #cb4b16;
+    --case-white: #eee8d5;
+    --case-dark: #586e75;
+  }
+
+  /* === Solarized Light === */
+  [data-theme="solarized-light"] {
+    --bg: #fdf6e3;
+    --ink: #073642;
+    --ink-soft: #586e75;
+    --muted: #93a1a1;
+    --accent: #dc322f;
+    --accent-2: #b58900;
+    --accent-3: #859900;
+    --accent-4: #268bd2;
+    --paper: #ffffff;
+    --rule: #eee8d5;
+    --code-bg: #eee8d5;
+    --highlight: #fff5c2;
+    --case-yellow: #b58900;
+    --case-red: #dc322f;
+    --case-blue: #268bd2;
+    --case-green: #859900;
+    --case-orange: #cb4b16;
+    --case-white: #fdf6e3;
+    --case-dark: #93a1a1;
+  }
+
+  /* === Monokai === */
+  [data-theme="monokai"] {
+    --bg: #272822;
+    --ink: #f8f8f2;
+    --ink-soft: #cfcfc2;
+    --muted: #75715e;
+    --accent: #f92672;
+    --accent-2: #fd971f;
+    --accent-3: #a6e22e;
+    --accent-4: #66d9ef;
+    --paper: #34352f;
+    --rule: #49483e;
+    --code-bg: #1f201b;
+    --highlight: #49483e;
+    --case-yellow: #f4bf75;
+    --case-red: #f92672;
+    --case-blue: #66d9ef;
+    --case-green: #a6e22e;
+    --case-orange: #fd971f;
+    --case-white: #f8f8f2;
+    --case-dark: #49483e;
+  }
+
+  /* === Gruvbox Dark === */
+  [data-theme="gruvbox"] {
+    --bg: #282828;
+    --ink: #ebdbb2;
+    --ink-soft: #d5c4a1;
+    --muted: #928374;
+    --accent: #fb4934;
+    --accent-2: #fabd2f;
+    --accent-3: #b8bb26;
+    --accent-4: #83a598;
+    --paper: #3c3836;
+    --rule: #504945;
+    --code-bg: #1d2021;
+    --highlight: #504945;
+    --case-yellow: #fabd2f;
+    --case-red: #fb4934;
+    --case-blue: #83a598;
+    --case-green: #b8bb26;
+    --case-orange: #fe8019;
+    --case-white: #ebdbb2;
+    --case-dark: #504945;
+  }
+
+  /* === Tokyo Night === */
+  [data-theme="tokyo-night"] {
+    --bg: #1a1b26;
+    --ink: #c0caf5;
+    --ink-soft: #a9b1d6;
+    --muted: #565f89;
+    --accent: #f7768e;
+    --accent-2: #e0af68;
+    --accent-3: #9ece6a;
+    --accent-4: #7aa2f7;
+    --paper: #24283b;
+    --rule: #414868;
+    --code-bg: #16161e;
+    --highlight: #364a82;
+    --case-yellow: #e0af68;
+    --case-red: #f7768e;
+    --case-blue: #7aa2f7;
+    --case-green: #9ece6a;
+    --case-orange: #ff9e64;
+    --case-white: #c0caf5;
+    --case-dark: #414868;
+  }
+
+  /* === Catppuccin Mocha === */
+  [data-theme="catppuccin"] {
+    --bg: #1e1e2e;
+    --ink: #cdd6f4;
+    --ink-soft: #bac2de;
+    --muted: #7f849c;
+    --accent: #f5c2e7;
+    --accent-2: #f9e2af;
+    --accent-3: #a6e3a1;
+    --accent-4: #89b4fa;
+    --paper: #313244;
+    --rule: #45475a;
+    --code-bg: #181825;
+    --highlight: #45475a;
+    --case-yellow: #f9e2af;
+    --case-red: #f38ba8;
+    --case-blue: #89b4fa;
+    --case-green: #a6e3a1;
+    --case-orange: #fab387;
+    --case-white: #cdd6f4;
+    --case-dark: #45475a;
+  }
+
+  /* === One Dark === */
+  [data-theme="one-dark"] {
+    --bg: #282c34;
+    --ink: #abb2bf;
+    --ink-soft: #9da5b4;
+    --muted: #5c6370;
+    --accent: #e06c75;
+    --accent-2: #e5c07b;
+    --accent-3: #98c379;
+    --accent-4: #61afef;
+    --paper: #353b45;
+    --rule: #3e4451;
+    --code-bg: #21252b;
+    --highlight: #3e4451;
+    --case-yellow: #e5c07b;
+    --case-red: #e06c75;
+    --case-blue: #61afef;
+    --case-green: #98c379;
+    --case-orange: #d19a66;
+    --case-white: #abb2bf;
+    --case-dark: #3e4451;
+  }
+
+  /* === GitHub Light === */
+  [data-theme="github-light"] {
+    --bg: #ffffff;
+    --ink: #1f2328;
+    --ink-soft: #424a53;
+    --muted: #6e7781;
+    --accent: #cf222e;
+    --accent-2: #bf8700;
+    --accent-3: #1a7f37;
+    --accent-4: #0969da;
+    --paper: #f6f8fa;
+    --rule: #d0d7de;
+    --code-bg: #eaeef2;
+    --highlight: #fff8c5;
+    --case-yellow: #d4a72c;
+    --case-red: #cf222e;
+    --case-blue: #0969da;
+    --case-green: #1a7f37;
+    --case-orange: #bc4c00;
+    --case-white: #f6f8fa;
+    --case-dark: #6e7781;
+  }
+
+  /* === Rose Pine === */
+  [data-theme="rose-pine"] {
+    --bg: #191724;
+    --ink: #e0def4;
+    --ink-soft: #c4c1d8;
+    --muted: #6e6a86;
+    --accent: #eb6f92;
+    --accent-2: #f6c177;
+    --accent-3: #9ccfd8;
+    --accent-4: #c4a7e7;
+    --paper: #1f1d2e;
+    --rule: #26233a;
+    --code-bg: #15131e;
+    --highlight: #26233a;
+    --case-yellow: #f6c177;
+    --case-red: #eb6f92;
+    --case-blue: #9ccfd8;
+    --case-green: #31748f;
+    --case-orange: #ea9a97;
+    --case-white: #e0def4;
+    --case-dark: #26233a;
+  }
+
+  /* Smooth theme transitions */
+  body, .timer-panel, .toc, .alg-card, table, th, td, .alg-moves, blockquote, .scramble-row {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
   }
 
   * { box-sizing: border-box; }
@@ -325,6 +593,49 @@
 
   p { margin: 0 0 12px; }
 
+  /* ===== Cube case image (auto-injected on cards with data-case) ===== */
+  .alg-card[data-case] {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .alg-card[data-case] > .case-image {
+    width: 90px;
+    height: 90px;
+    margin-top: 4px;
+  }
+
+  .alg-card[data-case] > .case-image svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .alg-card[data-case] > .case-image .case-loading,
+  .alg-card[data-case] > .case-image .case-error {
+    width: 100%;
+    height: 100%;
+    background: var(--code-bg);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 500px) {
+    .alg-card[data-case] {
+      grid-template-columns: 1fr;
+    }
+    .alg-card[data-case] > .case-image { width: 80px; height: 80px; }
+  }
+
   /* ===== Algorithm cards ===== */
   .alg-card {
     background: var(--paper);
@@ -523,9 +834,48 @@
     font-style: normal;
   }
 
+  /* ===== Theme Picker ===== */
+  .theme-picker {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 8px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .theme-picker label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .theme-picker select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    padding: 4px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .theme-picker select:focus { border-color: var(--accent); }
+
   /* ===== Mobile ===== */
   @media (max-width: 600px) {
-    .container { padding: 30px 18px 60px; }
+    .container { padding: 60px 18px 60px; }
     .timer-panel { padding: 24px 18px; box-shadow: 4px 4px 0 var(--accent); }
     .scramble-row { flex-direction: column; align-items: stretch; }
     .scramble-text { font-size: 13px; }
@@ -533,10 +883,32 @@
     h2 { font-size: 26px; }
     table { font-size: 12px; }
     th, td { padding: 8px; }
+    .theme-picker { top: 8px; right: 8px; padding: 6px 8px; }
+    .theme-picker label { display: none; }
   }
 </style>
 </head>
 <body>
+
+<!-- ===== Theme Picker ===== -->
+<div class="theme-picker">
+  <label for="themeSelect">Theme</label>
+  <select id="themeSelect">
+    <option value="">Newsprint</option>
+    <option value="github-light">GitHub Light</option>
+    <option value="solarized-light">Solarized Light</option>
+    <option value="dracula">Dracula</option>
+    <option value="nord">Nord</option>
+    <option value="solarized-dark">Solarized Dark</option>
+    <option value="monokai">Monokai</option>
+    <option value="gruvbox">Gruvbox Dark</option>
+    <option value="tokyo-night">Tokyo Night</option>
+    <option value="catppuccin">Catppuccin Mocha</option>
+    <option value="one-dark">One Dark</option>
+    <option value="rose-pine">Rosé Pine</option>
+  </select>
+</div>
+
 <div class="container">
 
 <header>
@@ -704,7 +1076,7 @@
 
     <h3>Step 1: Edges (3 cases)</h3>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="dot">
       <div class="alg-name">Dot Shape</div>
       <div class="alg-desc">No yellow edges face up.</div>
       <div class="alg-body">
@@ -714,7 +1086,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="i-shape">
       <div class="alg-name">I-Shape (line)</div>
       <div class="alg-desc">A horizontal yellow line.</div>
       <div class="alg-body">
@@ -724,7 +1096,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="l-shape">
       <div class="alg-name">L-Shape</div>
       <div class="alg-desc">Two yellow edges meeting at a corner.</div>
       <div class="alg-body">
@@ -738,7 +1110,7 @@
 
     <h3>Step 2: Corners (7 cases)</h3>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="sune">
       <div class="alg-name">Sune</div>
       <div class="alg-desc">One yellow corner front-left, headlights on the back.</div>
       <div class="alg-body">
@@ -747,7 +1119,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="antisune">
       <div class="alg-name">Antisune</div>
       <div class="alg-desc">One yellow corner front-right, headlights on the left.</div>
       <div class="alg-body">
@@ -757,7 +1129,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="h-oll">
       <div class="alg-name">H</div>
       <div class="alg-desc">Two pairs of headlights opposite each other.</div>
       <div class="alg-body">
@@ -767,7 +1139,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="pi">
       <div class="alg-name">Pi (π)</div>
       <div class="alg-desc">No headlights. Symmetric — front half mirrors back half.</div>
       <div class="alg-body">
@@ -777,7 +1149,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="t-oll">
       <div class="alg-name">T</div>
       <div class="alg-desc">Two yellow corners on the same side, headlights opposite.</div>
       <div class="alg-body">
@@ -787,7 +1159,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="l-oll">
       <div class="alg-name">L</div>
       <div class="alg-desc">Two yellow corners diagonally across with an L-shape of yellow on a side.</div>
       <div class="alg-body">
@@ -797,7 +1169,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="u-oll">
       <div class="alg-name">U</div>
       <div class="alg-desc">Two yellow corners on the back, U-shape of yellow on a side. The only OLL here that uses D.</div>
       <div class="alg-body">
@@ -818,7 +1190,7 @@
     <h3>Step 1: Corners (2 cases)</h3>
     <p>Find the <strong>headlights</strong> — two corners of the same color side-by-side.</p>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="headlights">
       <div class="alg-name">Headlights (A-Perm style)</div>
       <div class="alg-desc">Hold headlights on the back. Three other corners cycle.</div>
       <div class="alg-body">
@@ -827,7 +1199,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="diagonal">
       <div class="alg-name">Diagonal</div>
       <div class="alg-desc">No headlights anywhere — all four corners need to move. Two diagonal corners swap.</div>
       <div class="alg-body">
@@ -839,7 +1211,7 @@
 
     <h3>Step 2: Edges (4 cases)</h3>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="ua-perm">
       <div class="alg-name">Ua Perm</div>
       <div class="alg-desc">Three edges cycle counterclockwise. Hold solved edge in back.</div>
       <div class="alg-body">
@@ -849,7 +1221,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="ub-perm">
       <div class="alg-name">Ub Perm</div>
       <div class="alg-desc">Three edges cycle clockwise. Mirror of Ua. Hold solved edge in back.</div>
       <div class="alg-body">
@@ -859,7 +1231,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="h-perm">
       <div class="alg-name">H Perm</div>
       <div class="alg-desc">Opposite edges swap with each other.</div>
       <div class="alg-body">
@@ -868,7 +1240,7 @@
       </div>
     </div>
 
-    <div class="alg-card">
+    <div class="alg-card" data-case="z-perm">
       <div class="alg-name">Z Perm</div>
       <div class="alg-desc">Two pairs of adjacent edges swap.</div>
       <div class="alg-body">
@@ -902,6 +1274,86 @@
 </div>
 
 <script>
+/* ============================================================
+   CASE IMAGE LOADER
+   Fetches SVG files from images/ and inlines them so they
+   inherit the page's CSS variables (themes work).
+   ============================================================ */
+(function() {
+  const cards = document.querySelectorAll('.alg-card[data-case]');
+  // Cache fetched SVGs so we don't refetch the same file
+  const cache = {};
+
+  cards.forEach(card => {
+    const caseName = card.dataset.case;
+    const wrap = document.createElement('div');
+    wrap.className = 'case-image';
+    wrap.innerHTML = '<div class="case-loading">loading</div>';
+    card.insertBefore(wrap, card.firstChild);
+
+    const url = `images/${caseName}.svg`;
+
+    const setSvg = (svgText) => {
+      // Strip XML prolog/doctype if present, keep just the <svg>...</svg>
+      const match = svgText.match(/<svg[\s\S]*<\/svg>/i);
+      wrap.innerHTML = match ? match[0] : svgText;
+    };
+
+    if (cache[url]) {
+      cache[url].then(setSvg).catch(() => {
+        wrap.innerHTML = `<div class="case-error">${caseName}<br>missing</div>`;
+      });
+      return;
+    }
+
+    cache[url] = fetch(url).then(res => {
+      if (!res.ok) throw new Error('not found');
+      return res.text();
+    });
+
+    cache[url].then(setSvg).catch(() => {
+      wrap.innerHTML = `<div class="case-error">${caseName}<br>missing</div>`;
+    });
+  });
+})();
+
+/* ============================================================
+   THEME PICKER
+   ============================================================ */
+(function() {
+  const select = document.getElementById('themeSelect');
+  const STORAGE_KEY = 'cubefaster-theme';
+
+  function getSavedTheme() {
+    try { return localStorage.getItem(STORAGE_KEY) || ''; }
+    catch { return ''; }
+  }
+
+  function saveTheme(value) {
+    try { localStorage.setItem(STORAGE_KEY, value); } catch {}
+  }
+
+  function applyTheme(value) {
+    if (value) {
+      document.documentElement.setAttribute('data-theme', value);
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  const saved = getSavedTheme();
+  if (saved) {
+    select.value = saved;
+    applyTheme(saved);
+  }
+
+  select.addEventListener('change', (e) => {
+    const value = e.target.value;
+    applyTheme(value);
+    saveTheme(value);
+  });
+})();
+
 /* ============================================================
    TIMER
    ============================================================ */
