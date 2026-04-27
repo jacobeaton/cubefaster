@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFOP Cheatsheet — Interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --ink: #1a1a1a;
+    --ink-soft: #4a4a4a;
+    --muted: #7a7a7a;
+    --accent: #d64545;
+    --accent-2: #f5b300;
+    --accent-3: #2d6a4f;
+    --accent-4: #1d3557;
+    --paper: #ffffff;
+    --rule: #e6e0d4;
+    --code-bg: #f0ece1;
+    --highlight: #fff3b8;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(214, 69, 69, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(245, 179, 0, 0.05) 0%, transparent 40%);
+  }
+
+  .container {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 50px 32px 80px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    margin-bottom: 30px;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 22px;
+    position: relative;
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 60px;
+    height: 6px;
+    background: var(--accent);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(40px, 7vw, 68px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+  }
+
+  h1 .accent { color: var(--accent); font-style: italic; }
+
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ===== Timer Panel ===== */
+  .timer-panel {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+    box-shadow: 8px 8px 0 var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timer-panel::before {
+    content: "TIMER";
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+
+  .timer-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(56px, 12vw, 96px);
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 8px 0 4px;
+    color: var(--paper);
+    transition: color 0.2s;
+  }
+
+  .timer-display.ready { color: var(--accent-2); }
+  .timer-display.running { color: #7fffa1; }
+  .timer-display.inspecting { color: var(--accent); }
+
+  .timer-status {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    min-height: 16px;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border: 2px solid var(--paper);
+    background: transparent;
+    color: var(--paper);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 2px;
+  }
+
+  .btn:hover { background: var(--paper); color: var(--ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); }
+  .btn.primary:hover { background: var(--paper); color: var(--accent); border-color: var(--paper); }
+
+  .scramble-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.06);
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .scramble-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent-2);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .scramble-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    flex-grow: 1;
+    word-spacing: 0.3em;
+    line-height: 1.4;
+  }
+
+  .scramble-btn {
+    background: var(--accent-2);
+    color: var(--ink);
+    border: none;
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .scramble-btn:hover { background: var(--paper); }
+
+  .session-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 14px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--paper);
+  }
+
+  .timer-help {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 18px 24px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    border-radius: 3px;
+  }
+
+  .toc a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--rule);
+    transition: color 0.15s, padding-left 0.15s;
+  }
+
+  .toc a:hover { color: var(--accent); padding-left: 4px; }
+  .toc a .num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+  /* ===== Sections ===== */
+  section {
+    margin-bottom: 48px;
+    scroll-margin-top: 20px;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+    line-height: 1.1;
+  }
+
+  h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    margin-right: 10px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  h2 + .section-sub {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 26px 0 8px;
+    color: var(--accent-4);
+  }
+
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    margin: 18px 0 6px;
+  }
+
+  p { margin: 0 0 12px; }
+
+  /* ===== Algorithm cards ===== */
+  .alg-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent-4);
+    padding: 16px 20px;
+    margin: 12px 0 18px;
+    border-radius: 0 3px 3px 0;
+    position: relative;
+  }
+
+  .alg-card.collapsed .alg-body { display: none; }
+
+  .alg-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0 0 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .alg-name::after {
+    content: "−";
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .alg-card.collapsed .alg-name::after { content: "+"; }
+
+  .alg-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 8px;
+    font-style: italic;
+  }
+
+  .alg-moves {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--code-bg);
+    padding: 10px 14px;
+    border-radius: 2px;
+    margin: 8px 0;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    word-spacing: 0.15em;
+    user-select: all;
+  }
+
+  .alg-moves:hover { background: var(--highlight); }
+
+  .alg-moves::after {
+    content: "click to copy";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: var(--paper);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .alg-moves:hover::after { opacity: 1; }
+  .alg-moves.copied::after { content: "copied!"; opacity: 1; color: var(--accent-3); }
+
+  .alg-trigger {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-4);
+    font-weight: 600;
+    margin: 6px 0;
+  }
+
+  .alg-trigger .t {
+    background: var(--accent-2);
+    color: var(--ink);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+
+  .alg-note {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    padding-left: 12px;
+    border-left: 2px solid var(--rule);
+    font-style: italic;
+  }
+
+  /* ===== Tables ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 24px;
+    font-size: 13px;
+    background: var(--paper);
+  }
+
+  th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 12px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+
+  /* ===== Strategy lists ===== */
+  ol.strat li, ul.strat li {
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  ol.strat li strong { color: var(--accent-4); }
+
+  blockquote {
+    background: var(--highlight);
+    border-left: 4px solid var(--accent-2);
+    padding: 12px 18px;
+    margin: 16px 0;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  /* ===== Collapsible section ===== */
+  .collapsible-head {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+
+  .collapsible-head::after {
+    content: "−";
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    color: var(--muted);
+    margin-left: 12px;
+  }
+
+  section.collapsed .collapsible-head::after { content: "+"; }
+  section.collapsed .section-body { display: none; }
+  section.collapsed { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+
+  /* ===== Footer ===== */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 2px solid var(--ink);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    text-align: center;
+    font-size: 16px;
+  }
+
+  footer .signoff {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 600px) {
+    .container { padding: 30px 18px 60px; }
+    .timer-panel { padding: 24px 18px; box-shadow: 4px 4px 0 var(--accent); }
+    .scramble-row { flex-direction: column; align-items: stretch; }
+    .scramble-text { font-size: 13px; }
+    h1 { font-size: 38px; }
+    h2 { font-size: 26px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="eyebrow">CFOP Method · Interactive Edition</div>
+  <h1>Cube,<br><span class="accent">Faster.</span></h1>
+  <p class="tagline">A speedcuber's guide to the Cross, F2L, OLL, and PLL — with trigger names that actually stick.</p>
+</header>
+
+<!-- ===== Timer ===== -->
+<div class="timer-panel">
+  <div class="timer-display" id="timerDisplay">0.00</div>
+  <div class="timer-status" id="timerStatus">Press &amp; hold SPACE to start</div>
+  <div class="timer-controls">
+    <button class="btn primary" id="startBtn">Start (Space)</button>
+    <button class="btn" id="resetBtn">Reset Session</button>
+    <button class="btn" id="inspectionToggle">Inspection: ON</button>
+  </div>
+  <div class="scramble-row">
+    <span class="scramble-label">Scramble</span>
+    <span class="scramble-text" id="scrambleText">—</span>
+    <button class="scramble-btn" id="newScrambleBtn">New</button>
+  </div>
+  <div class="session-stats">
+    <div class="stat"><div class="stat-label">Last</div><div class="stat-value" id="statLast">—</div></div>
+    <div class="stat"><div class="stat-label">Best</div><div class="stat-value" id="statBest">—</div></div>
+    <div class="stat"><div class="stat-label">Ao5</div><div class="stat-value" id="statAo5">—</div></div>
+    <div class="stat"><div class="stat-label">Ao12</div><div class="stat-value" id="statAo12">—</div></div>
+    <div class="stat"><div class="stat-label">Solves</div><div class="stat-value" id="statCount">0</div></div>
+  </div>
+  <div class="timer-help">Hold SPACE until green, release to start · Tap SPACE again to stop</div>
+</div>
+
+<!-- ===== TOC ===== -->
+<nav class="toc">
+  <a href="#triggers"><span class="num">00</span>Trigger Dictionary</a>
+  <a href="#cross"><span class="num">01</span>White Cross</a>
+  <a href="#f2l"><span class="num">02</span>F2L (Intuitive)</a>
+  <a href="#oll"><span class="num">03</span>2-Look OLL</a>
+  <a href="#pll"><span class="num">04</span>2-Look PLL</a>
+  <a href="#roadmap"><span class="num">05</span>Practice Roadmap</a>
+</nav>
+
+<!-- ===== Triggers ===== -->
+<section id="triggers">
+  <h2 class="collapsible-head"><span><span class="num">00</span>Trigger Dictionary</span></h2>
+  <div class="section-body">
+    <p class="section-sub">A <strong>trigger</strong> is a small grouping of moves your fingers learn as one unit. Chunk the alg in your head instead of memorizing letter soup.</p>
+
+    <h3>Core Triggers</h3>
+    <table>
+      <tr><th>Trigger</th><th>Moves</th><th>Why the Name</th></tr>
+      <tr><td>Sexy</td><td><code>R U R' U'</code></td><td>Community standard. The most-used trigger in cubing.</td></tr>
+      <tr><td>Lifted Sexy</td><td><code>R U R' U</code></td><td>A sexy whose last move lifts up (U) instead of down (U').</td></tr>
+      <tr><td>Backsexy</td><td><code>R U' R' U</code></td><td>Sexy run in reverse — goes left first, lifts at the end.</td></tr>
+      <tr><td>Lefty Sexy</td><td><code>R U' R' U'</code></td><td>Both U-moves go the lefty direction.</td></tr>
+      <tr><td>Sledgehammer</td><td><code>R' F R F'</code></td><td>Community standard.</td></tr>
+      <tr><td>Hedgeslammer</td><td><code>F R' F' R</code></td><td>Community standard. Sledge's mirror.</td></tr>
+      <tr><td>Fat Sexy</td><td><code>r U R' U'</code></td><td>Community standard. Sexy with a wide R.</td></tr>
+      <tr><td>Insert</td><td><code>R U R'</code></td><td>The basic corner-insert trigger.</td></tr>
+      <tr><td>Reverse Insert</td><td><code>R U' R'</code></td><td>Insert going the other way.</td></tr>
+      <tr><td>Double Insert</td><td><code>R U2 R'</code></td><td>Insert with a U2 — slams the corner home.</td></tr>
+      <tr><td>Reverse Double Insert</td><td><code>R' U2 R</code></td><td>Mirror of Double Insert.</td></tr>
+    </table>
+
+    <h3>Wrappers</h3>
+    <table>
+      <tr><th>Wrapper</th><th>Pattern</th><th>Why the Name</th></tr>
+      <tr><td>F-wrap</td><td><code>F (...) F'</code></td><td>Setup with F, do something, undo with F'.</td></tr>
+      <tr><td>Wide-f-wrap</td><td><code>f (...) f'</code></td><td>F-wrap with a wide f.</td></tr>
+      <tr><td>D-wrap</td><td><code>D (...) D'</code></td><td>Setup with D, do something, undo with D'.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===== Cross ===== -->
+<section id="cross">
+  <h2 class="collapsible-head"><span><span class="num">01</span>White Cross</span></h2>
+  <div class="section-body">
+    <p class="section-sub"><strong>Goal:</strong> Solve four white edges on the bottom (yes, <em>bottom</em> — you'll thank me later) so each edge matches its center.</p>
+
+    <h3>Strategy for Speed</h3>
+    <ol class="strat">
+      <li><strong>Solve on the bottom, not the top.</strong> Flipping the cube wastes time, and you can't see your F2L corners while solving the cross on top.</li>
+      <li><strong>Plan in inspection.</strong> During the 15-second inspection, trace all four edges. Goal: zero pauses while solving.</li>
+      <li><strong>8 moves or fewer.</strong> Every cross is solvable in 8 moves max (most in 6–7). If you're using 12+, you're not planning.</li>
+      <li><strong>Don't solve edge-by-edge.</strong> Look for pairs of edges that can be solved together with shared setup moves.</li>
+      <li><strong>Color neutrality (advanced).</strong> Eventually, solve the cross on whichever color is easiest — not just white. Halves your average inspection difficulty.</li>
+    </ol>
+
+    <h3>Drill</h3>
+    <p>Practice cross-only solves. Time just the cross. Aim: <strong>sub-3 seconds</strong> consistently before stressing F2L.</p>
+  </div>
+</section>
+
+<!-- ===== F2L ===== -->
+<section id="f2l">
+  <h2 class="collapsible-head"><span><span class="num">02</span>F2L — Intuitive</span></h2>
+  <div class="section-body">
+    <p class="section-sub"><strong>Goal:</strong> Solve a corner-edge pair into each of the four bottom slots, simultaneously.</p>
+
+    <h3>The Big Idea</h3>
+    <p>You're not memorizing 41 cases. You're learning <strong>one concept</strong>: pair up the corner and edge above the slot, then insert them together.</p>
+
+    <h3>The Pairing Rule</h3>
+    <p>Every F2L solve is just two questions:</p>
+    <ol class="strat">
+      <li><strong>Where's the corner?</strong> (Top layer or bottom slot)</li>
+      <li><strong>Where's the edge?</strong> (Top layer or middle slot)</li>
+    </ol>
+    <p>If both are stuck in wrong spots, <strong>pop them out to the top first</strong>, then pair.</p>
+
+    <h3>The Three Pair-Up Templates</h3>
+
+    <div class="alg-card">
+      <div class="alg-name">Template A — "Easy Pair"</div>
+      <div class="alg-desc">Corner and edge both on top, ready to join.</div>
+      <div class="alg-body">
+        <p>If the corner is above its slot with white facing the side, and the edge is on top:</p>
+        <ul class="strat">
+          <li>Move the edge next to the corner so they're aligned.</li>
+          <li>Insert with <strong>Sexy</strong> (<code>R U R' U'</code>) or its mirror (<code>L' U' L U</code>).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Template B — "Hide and Seek"</div>
+      <div class="alg-desc">White on top of the corner.</div>
+      <div class="alg-body">
+        <ul class="strat">
+          <li>Set up so the pair forms after a U move.</li>
+          <li>Insertion uses an <strong>Insert</strong> trigger (<code>R U R'</code>) after a setup U.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Template C — "Split Pair"</div>
+      <div class="alg-desc">Pair is together but going in wrong.</div>
+      <div class="alg-body">
+        <p>The corner and edge are joined but the edge is on the wrong side. Use the <strong>Sledgehammer</strong> (<code>R' F R F'</code>) to flip the pair, then insert.</p>
+      </div>
+    </div>
+
+    <h3>Watch For</h3>
+    <ul class="strat">
+      <li><strong>Already-paired in slot but flipped:</strong> Pull the pair out with an Insert, reset, re-insert.</li>
+      <li><strong>Pair forms naturally:</strong> Sometimes a U move alone makes a perfect pair appear. Look before you move.</li>
+      <li><strong>Empty slot, full top:</strong> Always solve the easiest pair first.</li>
+    </ul>
+
+    <h3>Drill</h3>
+    <ul class="strat">
+      <li><strong>Slow F2L:</strong> Solve every F2L pair at 1 move per second, no pauses, no rotations. Speed comes from <em>no pauses</em>, not fast turning.</li>
+      <li><strong>Cross + F2L only.</strong> Time these together. Goal: under 20s combined for a beginner.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== OLL ===== -->
+<section id="oll">
+  <h2 class="collapsible-head"><span><span class="num">03</span>2-Look OLL</span></h2>
+  <div class="section-body">
+    <p class="section-sub"><strong>Goal:</strong> Make the entire top face yellow. Two steps: orient edges (yellow cross), then orient corners (full yellow face).</p>
+
+    <h3>Step 1: Edges (3 cases)</h3>
+
+    <div class="alg-card">
+      <div class="alg-name">Dot Shape</div>
+      <div class="alg-desc">No yellow edges face up.</div>
+      <div class="alg-body">
+        <div class="alg-moves">F (R U R' U') F' f (R U R' U') f'</div>
+        <div class="alg-trigger"><span class="t">F</span> — <span class="t">Sexy</span> — <span class="t">F'</span> — <span class="t">wide f</span> — <span class="t">Sexy</span> — <span class="t">wide f'</span></div>
+        <div class="alg-note">Two stacked F-wraps around Sexy, second one wide.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">I-Shape (line)</div>
+      <div class="alg-desc">A horizontal yellow line.</div>
+      <div class="alg-body">
+        <div class="alg-moves">F (R U R' U') F'</div>
+        <div class="alg-trigger"><span class="t">F</span> — <span class="t">Sexy</span> — <span class="t">F'</span></div>
+        <div class="alg-note">One F-wrap around a Sexy.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">L-Shape</div>
+      <div class="alg-desc">Two yellow edges meeting at a corner.</div>
+      <div class="alg-body">
+        <div class="alg-moves">f (R U R' U') f'</div>
+        <div class="alg-trigger"><span class="t">wide f</span> — <span class="t">Sexy</span> — <span class="t">wide f'</span></div>
+        <div class="alg-note">One wide-f-wrap around a Sexy. Same as I-Shape but wide.</div>
+      </div>
+    </div>
+
+    <blockquote>Memory hook: I-Shape and L-Shape are the same Sexy in different wrappers. Dot is just both of them stacked.</blockquote>
+
+    <h3>Step 2: Corners (7 cases)</h3>
+
+    <div class="alg-card">
+      <div class="alg-name">Sune</div>
+      <div class="alg-desc">One yellow corner front-left, headlights on the back.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(R U R' U) (R U2 R')</div>
+        <div class="alg-trigger"><span class="t">Lifted Sexy</span> — <span class="t">Double Insert</span></div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Antisune</div>
+      <div class="alg-desc">One yellow corner front-right, headlights on the left.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(R U2 R' U') (R U' R')</div>
+        <div class="alg-trigger"><span class="t">Reverse Double Insert</span> + U' — <span class="t">Reverse Insert</span></div>
+        <div class="alg-note">Reverse Double Insert, then U', then a Reverse Insert.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">H</div>
+      <div class="alg-desc">Two pairs of headlights opposite each other.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(R U R' U) (R U' R' U) (R U2 R')</div>
+        <div class="alg-trigger"><span class="t">Lifted Sexy</span> — <span class="t">Backsexy</span> — <span class="t">Double Insert</span></div>
+        <div class="alg-note">Sune's pattern with a Backsexy stuffed in the middle.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Pi (π)</div>
+      <div class="alg-desc">No headlights. Symmetric — front half mirrors back half.</div>
+      <div class="alg-body">
+        <div class="alg-moves">R U2 (R2 U' R2 U' R2) U2 R</div>
+        <div class="alg-trigger"><span class="t">R U2</span> — <span class="t">Triple-R2 Shuffle</span> — <span class="t">U2 R</span></div>
+        <div class="alg-note">The middle R2 U' R2 U' R2 is its own thing — three R2s separated by U' moves.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">T</div>
+      <div class="alg-desc">Two yellow corners on the same side, headlights opposite.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(r U R' U') (r' F R F')</div>
+        <div class="alg-trigger"><span class="t">Fat Sexy</span> — <span class="t">Fat Sledgehammer</span></div>
+        <div class="alg-note">Fat Sledgehammer = Sledgehammer that starts with a wide r' instead of R'.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">L</div>
+      <div class="alg-desc">Two yellow corners diagonally across with an L-shape of yellow on a side.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(F R' F' r) (U R U' r')</div>
+        <div class="alg-trigger"><span class="t">Fat Hedgeslammer</span> — <span class="t">Reverse Insert (fat finish)</span></div>
+        <div class="alg-note">Fat Hedgeslammer = Hedgeslammer with a wide r at the end.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">U</div>
+      <div class="alg-desc">Two yellow corners on the back, U-shape of yellow on a side. The only OLL here that uses D.</div>
+      <div class="alg-body">
+        <div class="alg-moves">R2 D (R' U2 R) D' (R' U2 R')</div>
+        <div class="alg-trigger"><span class="t">R2</span> — <span class="t">D-wrap around Reverse Double Insert</span> — <span class="t">R' U2 R'</span></div>
+        <div class="alg-note">D wraps around a clean Reverse Double Insert. Closing R' U2 R' is almost a Reverse Double Insert but ends with R' instead of R.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PLL ===== -->
+<section id="pll">
+  <h2 class="collapsible-head"><span><span class="num">04</span>2-Look PLL</span></h2>
+  <div class="section-body">
+    <p class="section-sub"><strong>Goal:</strong> Move pieces to their correct spots. Two steps: corners first, then edges.</p>
+
+    <h3>Step 1: Corners (2 cases)</h3>
+    <p>Find the <strong>headlights</strong> — two corners of the same color side-by-side.</p>
+
+    <div class="alg-card">
+      <div class="alg-name">Headlights (A-Perm style)</div>
+      <div class="alg-desc">Hold headlights on the back. Three other corners cycle.</div>
+      <div class="alg-body">
+        <div class="alg-moves">(R U R' U') R' F (R2 U' R' U') (R U R') F'</div>
+        <div class="alg-trigger"><span class="t">Sexy</span> — <span class="t">R' F</span> — <span class="t">R2 + Lefty Sexy chunk</span> — <span class="t">Insert</span> — <span class="t">F'</span></div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Diagonal</div>
+      <div class="alg-desc">No headlights anywhere — all four corners need to move. Two diagonal corners swap.</div>
+      <div class="alg-body">
+        <div class="alg-moves">F (R U' R' U') (R U R') F' (R U R' U') (R' F R F')</div>
+        <div class="alg-trigger"><span class="t">F</span> — <span class="t">Lefty-Sexy chunk</span> — <span class="t">Insert</span> — <span class="t">F'</span> — <span class="t">Sexy</span> — <span class="t">Sledgehammer</span></div>
+        <div class="alg-note">Mnemonic: ends with Sexy + Sledge — easiest part to remember.</div>
+      </div>
+    </div>
+
+    <h3>Step 2: Edges (4 cases)</h3>
+
+    <div class="alg-card">
+      <div class="alg-name">Ua Perm</div>
+      <div class="alg-desc">Three edges cycle counterclockwise. Hold solved edge in back.</div>
+      <div class="alg-body">
+        <div class="alg-moves">R U' (R U R U) (R U' R' U') R2</div>
+        <div class="alg-trigger"><span class="t">R U'</span> — <span class="t">U-Wave</span> — <span class="t">Lefty Sexy</span> — <span class="t">R2</span></div>
+        <div class="alg-note">U-Wave = R U R U, four moves alternating.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Ub Perm</div>
+      <div class="alg-desc">Three edges cycle clockwise. Mirror of Ua. Hold solved edge in back.</div>
+      <div class="alg-body">
+        <div class="alg-moves">R2 U (R U R' U') (R' U' R' U) R'</div>
+        <div class="alg-trigger"><span class="t">R2 U</span> — <span class="t">Sexy</span> — <span class="t">Lefty Lift</span> — <span class="t">R'</span></div>
+        <div class="alg-note">Lefty Lift = R' U' R' U, a Lefty-Sexy mirror starting from R'.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">H Perm</div>
+      <div class="alg-desc">Opposite edges swap with each other.</div>
+      <div class="alg-body">
+        <div class="alg-moves">M2 U M2 U2 M2 U M2</div>
+        <div class="alg-trigger">No triggers — pure M-slices and U-moves. Chant it: M2-U-M2-U2-M2-U-M2.</div>
+      </div>
+    </div>
+
+    <div class="alg-card">
+      <div class="alg-name">Z Perm</div>
+      <div class="alg-desc">Two pairs of adjacent edges swap.</div>
+      <div class="alg-body">
+        <div class="alg-moves">M' U (M2 U M2 U) M' U2 M2</div>
+        <div class="alg-trigger"><span class="t">M' U</span> — <span class="t">M-Wave</span> — <span class="t">M' U2 M2</span></div>
+        <div class="alg-note">M-Wave = M2 U M2 U. Starts with M' instead of M2 — that's how you know it's Z, not H.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Roadmap ===== -->
+<section id="roadmap">
+  <h2 class="collapsible-head"><span><span class="num">05</span>Practice Roadmap</span></h2>
+  <div class="section-body">
+    <ol class="strat">
+      <li><strong>Cross under 5s</strong> consistently → move on.</li>
+      <li><strong>F2L without rotations</strong> → speed comes later, smoothness first.</li>
+      <li><strong>Recognize OLL case in under 1 second</strong> → drill flashcards.</li>
+      <li><strong>PLL recognition by AUF (top-layer alignment)</strong> → never re-execute because of bad alignment.</li>
+      <li><strong>Sub-30 average</strong> is the first big milestone. Sub-20 means full PLL/OLL learning soon.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <div>Cube on, and remember: smooth is fast.</div>
+  <div class="signoff">— Coach</div>
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   TIMER
+   ============================================================ */
+(function() {
+  const display = document.getElementById('timerDisplay');
+  const status = document.getElementById('timerStatus');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const inspectionToggle = document.getElementById('inspectionToggle');
+  const statLast = document.getElementById('statLast');
+  const statBest = document.getElementById('statBest');
+  const statAo5 = document.getElementById('statAo5');
+  const statAo12 = document.getElementById('statAo12');
+  const statCount = document.getElementById('statCount');
+
+  let state = 'idle'; // idle, holding, ready, inspecting, running
+  let holdStartTime = 0;
+  let timerStartTime = 0;
+  let inspectionStartTime = 0;
+  let rafId = null;
+  let inspectionRafId = null;
+  let useInspection = true;
+  let solves = [];
+  const HOLD_DURATION = 400;
+
+  function fmt(ms) {
+    if (ms == null) return '—';
+    const s = ms / 1000;
+    if (s < 60) return s.toFixed(2);
+    const m = Math.floor(s / 60);
+    const rem = (s % 60).toFixed(2).padStart(5, '0');
+    return `${m}:${rem}`;
+  }
+
+  function setDisplay(text, cls) {
+    display.textContent = text;
+    display.className = 'timer-display' + (cls ? ' ' + cls : '');
+  }
+
+  function setStatus(text) { status.textContent = text; }
+
+  function tick() {
+    const elapsed = Date.now() - timerStartTime;
+    setDisplay(fmt(elapsed), 'running');
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function tickInspection() {
+    const elapsed = (Date.now() - inspectionStartTime) / 1000;
+    const remaining = Math.max(0, 15 - elapsed);
+    setDisplay(remaining.toFixed(1), 'inspecting');
+    if (remaining <= 0) {
+      setStatus('Inspection up! Press SPACE to start');
+    } else if (remaining <= 8) {
+      setStatus(`Inspection: ${remaining.toFixed(1)}s — get ready`);
+    }
+    inspectionRafId = requestAnimationFrame(tickInspection);
+  }
+
+  function startHold() {
+    if (state === 'running') {
+      // Stop timer
+      cancelAnimationFrame(rafId);
+      const elapsed = Date.now() - timerStartTime;
+      recordSolve(elapsed);
+      state = 'idle';
+      setStatus('Solved! Press &amp; hold SPACE for next');
+      generateScramble();
+      return;
+    }
+    if (state === 'inspecting' || state === 'idle') {
+      state = 'holding';
+      holdStartTime = Date.now();
+      setStatus('Hold...');
+      setDisplay(fmt(0), '');
+      checkHold();
+    }
+  }
+
+  function checkHold() {
+    if (state !== 'holding') return;
+    const held = Date.now() - holdStartTime;
+    if (held >= HOLD_DURATION) {
+      state = 'ready';
+      setDisplay(fmt(0), 'ready');
+      setStatus('READY — release to start');
+    } else {
+      requestAnimationFrame(checkHold);
+    }
+  }
+
+  function releaseHold() {
+    if (state === 'holding') {
+      // Released too early
+      state = useInspection && inspectionRafId ? 'inspecting' : 'idle';
+      if (state === 'idle') {
+        setDisplay(fmt(0), '');
+        setStatus('Press &amp; hold SPACE to start');
+      }
+    } else if (state === 'ready') {
+      // Start the timer
+      if (inspectionRafId) {
+        cancelAnimationFrame(inspectionRafId);
+        inspectionRafId = null;
+      }
+      state = 'running';
+      timerStartTime = Date.now();
+      setStatus('GO!');
+      tick();
+    }
+  }
+
+  function beginInspection() {
+    if (!useInspection) return;
+    if (state !== 'idle') return;
+    state = 'inspecting';
+    inspectionStartTime = Date.now();
+    setStatus('Inspection started — hold SPACE when ready');
+    tickInspection();
+  }
+
+  function recordSolve(ms) {
+    solves.push(ms);
+    updateStats();
+  }
+
+  function ao(n) {
+    if (solves.length < n) return null;
+    const slice = solves.slice(-n);
+    const sorted = [...slice].sort((a,b) => a-b);
+    const trim = Math.floor(n * 0.05) || 1;
+    const middle = sorted.slice(trim, sorted.length - trim);
+    const sum = middle.reduce((a,b) => a+b, 0);
+    return sum / middle.length;
+  }
+
+  function updateStats() {
+    statLast.textContent = solves.length ? fmt(solves[solves.length-1]) : '—';
+    statBest.textContent = solves.length ? fmt(Math.min(...solves)) : '—';
+    statAo5.textContent = fmt(ao(5));
+    statAo12.textContent = fmt(ao(12));
+    statCount.textContent = solves.length;
+  }
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Clear session stats?')) return;
+    solves = [];
+    updateStats();
+    state = 'idle';
+    setDisplay(fmt(0), '');
+    setStatus('Session cleared');
+    if (rafId) cancelAnimationFrame(rafId);
+    if (inspectionRafId) cancelAnimationFrame(inspectionRafId);
+  });
+
+  inspectionToggle.addEventListener('click', () => {
+    useInspection = !useInspection;
+    inspectionToggle.textContent = 'Inspection: ' + (useInspection ? 'ON' : 'OFF');
+  });
+
+  startBtn.addEventListener('click', () => {
+    if (state === 'idle' && useInspection) {
+      beginInspection();
+    } else if (state === 'running') {
+      cancelAnimationFrame(rafId);
+      const elapsed = Date.now() - timerStartTime;
+      recordSolve(elapsed);
+      state = 'idle';
+      setStatus('Stopped');
+      generateScramble();
+    } else {
+      // Quick start without hold
+      state = 'running';
+      timerStartTime = Date.now();
+      setStatus('GO!');
+      tick();
+    }
+  });
+
+  // Keyboard
+  let spaceDown = false;
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space') return;
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    if (spaceDown) return;
+    spaceDown = true;
+
+    if (state === 'running') {
+      cancelAnimationFrame(rafId);
+      const elapsed = Date.now() - timerStartTime;
+      recordSolve(elapsed);
+      state = 'idle';
+      setStatus('Solved! Press &amp; hold SPACE for next');
+      generateScramble();
+      return;
+    }
+    if (state === 'idle' && useInspection) {
+      beginInspection();
+      return;
+    }
+    startHold();
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.code !== 'Space') return;
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    spaceDown = false;
+    releaseHold();
+  });
+
+  /* ============================================================
+     SCRAMBLE GENERATOR
+     ============================================================ */
+  const scrambleText = document.getElementById('scrambleText');
+  const newScrambleBtn = document.getElementById('newScrambleBtn');
+
+  function generateScramble() {
+    const faces = ['U','D','L','R','F','B'];
+    const opposites = { U:'D', D:'U', L:'R', R:'L', F:'B', B:'F' };
+    const modifiers = ['', "'", '2'];
+    const moves = [];
+    let lastFace = null;
+    let lastLastFace = null;
+    while (moves.length < 20) {
+      const face = faces[Math.floor(Math.random() * 6)];
+      if (face === lastFace) continue;
+      if (face === lastLastFace && opposites[face] === lastFace) continue;
+      const mod = modifiers[Math.floor(Math.random() * 3)];
+      moves.push(face + mod);
+      lastLastFace = lastFace;
+      lastFace = face;
+    }
+    scrambleText.textContent = moves.join(' ');
+  }
+
+  newScrambleBtn.addEventListener('click', generateScramble);
+  generateScramble();
+  updateStats();
+})();
+
+/* ============================================================
+   COLLAPSIBLE SECTIONS
+   ============================================================ */
+document.querySelectorAll('section .collapsible-head').forEach(head => {
+  head.addEventListener('click', () => {
+    head.parentElement.classList.toggle('collapsed');
+  });
+});
+
+/* ============================================================
+   COLLAPSIBLE ALG CARDS
+   ============================================================ */
+document.querySelectorAll('.alg-card .alg-name').forEach(name => {
+  name.addEventListener('click', () => {
+    name.parentElement.classList.toggle('collapsed');
+  });
+});
+
+/* ============================================================
+   COPY-TO-CLIPBOARD ON ALGS
+   ============================================================ */
+document.querySelectorAll('.alg-moves').forEach(el => {
+  el.addEventListener('click', async (e) => {
+    const text = el.textContent.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1200);
+  });
+});
+</script>
+</body>
+</html>
