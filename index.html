@@ -531,6 +531,86 @@
     letter-spacing: 0.05em;
   }
 
+  /* ===== Case banner (shows current case name in trainer mode) ===== */
+  .case-banner {
+    text-align: center;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .case-banner-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+
+  .case-banner-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-2);
+    letter-spacing: -0.01em;
+  }
+
+  /* ===== Case filter ===== */
+  .case-filter {
+    margin: 14px 0 4px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .case-filter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .case-filter-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .case-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 10px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .case-chip:hover { color: var(--paper); border-color: var(--paper); }
+  .case-chip.active {
+    background: var(--accent-2);
+    color: var(--ink);
+    border-color: var(--accent-2);
+  }
+
+  .case-chip.group-chip {
+    font-weight: 700;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .case-chip.group-chip.active { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+
   /* ===== TOC ===== */
   .toc {
     background: var(--paper);
@@ -931,17 +1011,26 @@
 
 <!-- ===== Timer ===== -->
 <div class="timer-panel">
+  <div class="case-banner" id="caseBanner" style="display:none;">
+    <span class="case-banner-label">Case:</span>
+    <span class="case-banner-name" id="caseBannerName">—</span>
+  </div>
   <div class="timer-display" id="timerDisplay">0.00</div>
   <div class="timer-status" id="timerStatus">Press &amp; hold SPACE to start</div>
   <div class="timer-controls">
     <button class="btn primary" id="startBtn">Start (Space)</button>
     <button class="btn" id="resetBtn">Reset Session</button>
     <button class="btn" id="inspectionToggle">Inspection: ON</button>
+    <button class="btn" id="modeToggle">Mode: WCA Random</button>
   </div>
   <div class="scramble-row">
     <span class="scramble-label">Scramble</span>
     <span class="scramble-text" id="scrambleText">—</span>
     <button class="scramble-btn" id="newScrambleBtn">New</button>
+  </div>
+  <div class="case-filter" id="caseFilter" style="display:none;">
+    <div class="case-filter-label">Train cases:</div>
+    <div class="case-filter-groups" id="caseFilterGroups"></div>
   </div>
   <div class="session-stats">
     <div class="stat"><div class="stat-label">Last</div><div class="stat-value" id="statLast">—</div></div>
@@ -1285,6 +1374,7 @@
 
 </div>
 
+<script src="scrambles.js"></script>
 <script>
 /* ============================================================
    CASE IMAGE LOADER
@@ -1579,12 +1669,24 @@
   });
 
   /* ============================================================
-     SCRAMBLE GENERATOR
+     SCRAMBLE GENERATOR — supports two modes:
+       - 'wca':     random 20-move scramble (no case targeting)
+       - 'trainer': scrambles that produce a specific OLL/PLL case,
+                    using the inverse-alg trick from scrambles.js
      ============================================================ */
   const scrambleText = document.getElementById('scrambleText');
   const newScrambleBtn = document.getElementById('newScrambleBtn');
+  const modeToggle = document.getElementById('modeToggle');
+  const caseBanner = document.getElementById('caseBanner');
+  const caseBannerName = document.getElementById('caseBannerName');
+  const caseFilter = document.getElementById('caseFilter');
+  const caseFilterGroups = document.getElementById('caseFilterGroups');
 
-  function generateScramble() {
+  let scrambleMode = 'wca';   // 'wca' or 'trainer'
+  let allowedCaseIds = [];    // empty = all cases when in trainer mode
+  let currentCaseId = null;   // which case the current scramble produces
+
+  function generateWCAScramble() {
     const faces = ['U','D','L','R','F','B'];
     const opposites = { U:'D', D:'U', L:'R', R:'L', F:'B', B:'F' };
     const modifiers = ['', "'", '2'];
@@ -1600,8 +1702,111 @@
       lastLastFace = lastFace;
       lastFace = face;
     }
-    scrambleText.textContent = moves.join(' ');
+    return moves.join(' ');
   }
+
+  function generateScramble() {
+    if (scrambleMode === 'trainer' && window.CubeScrambleGenerator) {
+      const result = window.CubeScrambleGenerator.generate(allowedCaseIds);
+      currentCaseId = result.caseId;
+      scrambleText.textContent = result.scramble;
+      caseBannerName.textContent = result.caseName;
+      caseBanner.style.display = '';
+    } else {
+      currentCaseId = null;
+      scrambleText.textContent = generateWCAScramble();
+      caseBanner.style.display = 'none';
+    }
+  }
+
+  /* ===== Case filter UI =====
+     Builds chip buttons for each case + group chips for quick selection.
+  */
+  function buildCaseFilter() {
+    if (!window.CubeScrambleGenerator) return;
+    const CASES = window.CubeScrambleGenerator.CASES;
+    caseFilterGroups.innerHTML = '';
+
+    // Group chips first
+    const groupLabels = {
+      'oll-edges':   'OLL Edges',
+      'oll-corners': 'OLL Corners',
+      'pll-corners': 'PLL Corners',
+      'pll-edges':   'PLL Edges'
+    };
+
+    Object.entries(groupLabels).forEach(([groupKey, label]) => {
+      const chip = document.createElement('button');
+      chip.className = 'case-chip group-chip';
+      chip.textContent = label;
+      chip.dataset.group = groupKey;
+      chip.addEventListener('click', () => {
+        const groupCaseIds = Object.keys(CASES).filter(id => CASES[id].group === groupKey);
+        const allSelected = groupCaseIds.every(id => allowedCaseIds.includes(id));
+        if (allSelected) {
+          // Deselect all in group
+          allowedCaseIds = allowedCaseIds.filter(id => !groupCaseIds.includes(id));
+        } else {
+          // Select all in group (add any missing)
+          groupCaseIds.forEach(id => {
+            if (!allowedCaseIds.includes(id)) allowedCaseIds.push(id);
+          });
+        }
+        updateChipStates();
+        generateScramble();
+      });
+      caseFilterGroups.appendChild(chip);
+    });
+
+    // Individual case chips
+    Object.entries(CASES).forEach(([id, c]) => {
+      const chip = document.createElement('button');
+      chip.className = 'case-chip';
+      chip.textContent = c.name;
+      chip.dataset.caseId = id;
+      chip.addEventListener('click', () => {
+        const idx = allowedCaseIds.indexOf(id);
+        if (idx === -1) allowedCaseIds.push(id);
+        else allowedCaseIds.splice(idx, 1);
+        updateChipStates();
+        generateScramble();
+      });
+      caseFilterGroups.appendChild(chip);
+    });
+
+    updateChipStates();
+  }
+
+  function updateChipStates() {
+    const CASES = window.CubeScrambleGenerator?.CASES || {};
+    // Individual case chips
+    caseFilterGroups.querySelectorAll('.case-chip[data-case-id]').forEach(chip => {
+      const id = chip.dataset.caseId;
+      const active = allowedCaseIds.length === 0 || allowedCaseIds.includes(id);
+      chip.classList.toggle('active', active);
+    });
+    // Group chips - active if all cases in group are selected
+    caseFilterGroups.querySelectorAll('.case-chip.group-chip').forEach(chip => {
+      const groupKey = chip.dataset.group;
+      const groupCaseIds = Object.keys(CASES).filter(id => CASES[id].group === groupKey);
+      const allSelected = groupCaseIds.length > 0 && groupCaseIds.every(id =>
+        allowedCaseIds.length === 0 || allowedCaseIds.includes(id)
+      );
+      chip.classList.toggle('active', allSelected);
+    });
+  }
+
+  modeToggle.addEventListener('click', () => {
+    scrambleMode = scrambleMode === 'wca' ? 'trainer' : 'wca';
+    modeToggle.textContent = 'Mode: ' + (scrambleMode === 'wca' ? 'WCA Random' : 'Case Trainer');
+    if (scrambleMode === 'trainer') {
+      caseFilter.style.display = '';
+      buildCaseFilter();
+    } else {
+      caseFilter.style.display = 'none';
+    }
+    generateScramble();
+  });
 
   newScrambleBtn.addEventListener('click', generateScramble);
   generateScramble();
