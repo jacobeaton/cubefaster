@@ -28,12 +28,13 @@ Trainer scrambles work by **inverting** each case's solving algorithm and applyi
 
 ### Progressive hints
 
-In Case Trainer mode the case name is **hidden by default** — you have to recognize it yourself. Hit the **Hint** button (or press **H**) to reveal information one stage at a time:
+In Case Trainer mode the case is **hidden by default** — you have to recognize it from the scramble yourself. Hit the **Hint** button (or press **H**) to reveal information one stage at a time:
 
-1. First press: shows the **case name** (e.g. "Pi", "Sune")
-2. Each subsequent press: reveals **one more chunk** of the algorithm
+1. First press: shows the **case image** (orientation matters — different AUFs of Sune look different on the cube)
+2. Second press: shows the **case name** (e.g. "Pi", "Sune")
+3. Each subsequent press: reveals **one more chunk** of the algorithm
 
-Chunks are split intelligently — triggers like `(R U R' U)` stay together as a single chunk, while loose moves are revealed individually. So a Sune (`(R U R' U) (R U2 R')`) takes 3 presses to fully reveal: name → first trigger → second trigger. A Pi (`R U2 (R2 U' R2 U' R2) U2 R`) takes 6 presses since the loose moves around the trigger reveal one at a time.
+Chunks are split intelligently — triggers like `(R U R' U)` stay together as a single chunk, while loose moves are revealed individually. So a Sune (`(R U R' U) (R U2 R')`) takes 4 presses to fully reveal: image → name → first trigger → second trigger.
 
 ## How case images work
 

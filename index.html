@@ -593,6 +593,33 @@
     word-spacing: 0.1em;
   }
 
+  .hint-image {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+
+  .hint-image svg { width: 100%; height: 100%; display: block; }
+
+  .hint-image .case-loading,
+  .hint-image .case-error {
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .hint-image-row { align-items: center; }
+
   .hint-chunk {
     display: inline-block;
     padding: 2px 6px;
@@ -1093,8 +1120,12 @@
     <button class="scramble-btn" id="newScrambleBtn">New</button>
   </div>
   <div class="hint-panel" id="hintPanel" style="display:none;">
-    <div class="hint-row hint-name" id="hintNameRow" style="display:none;">
+    <div class="hint-row hint-image-row" id="hintImageRow" style="display:none;">
       <span class="hint-label">Case</span>
+      <div class="hint-image" id="hintImage"></div>
+    </div>
+    <div class="hint-row hint-name" id="hintNameRow" style="display:none;">
+      <span class="hint-label">Name</span>
       <span class="hint-value" id="hintName">—</span>
     </div>
     <div class="hint-row hint-alg" id="hintAlgRow" style="display:none;">
@@ -1763,6 +1794,8 @@
   const modeToggle = document.getElementById('modeToggle');
   const hintBtn = document.getElementById('hintBtn');
   const hintPanel = document.getElementById('hintPanel');
+  const hintImageRow = document.getElementById('hintImageRow');
+  const hintImage = document.getElementById('hintImage');
   const hintNameRow = document.getElementById('hintNameRow');
   const hintAlgRow = document.getElementById('hintAlgRow');
   const hintName = document.getElementById('hintName');
@@ -1775,8 +1808,34 @@
   let allowedCaseIds = [];    // empty = all cases when in trainer mode
   let currentCase = null;     // the full case object for the current scramble
 
-  // Hint level: -1 = nothing shown, 0 = case name, 1+ = N alg chunks revealed
+  // Hint level: -1 = nothing shown, 0 = image, 1 = + name, 2+ = + N alg chunks
   let hintLevel = -1;
+
+  // Cache fetched case-image SVGs so we don't refetch each time
+  const hintImageCache = {};
+
+  function loadHintImage(caseId) {
+    hintImage.innerHTML = '<div class="case-loading">loading</div>';
+    const url = `images/${caseId}.svg`;
+    if (hintImageCache[url]) {
+      hintImageCache[url].then(setHintSvg).catch(() => setHintError(caseId));
+      return;
+    }
+    hintImageCache[url] = fetch(url).then(res => {
+      if (!res.ok) throw new Error('not found');
+      return res.text();
+    });
+    hintImageCache[url].then(setHintSvg).catch(() => setHintError(caseId));
+  }
+
+  function setHintSvg(svgText) {
+    const match = svgText.match(/<svg[\s\S]*<\/svg>/i);
+    hintImage.innerHTML = match ? match[0] : svgText;
+  }
+
+  function setHintError(caseId) {
+    hintImage.innerHTML = `<div class="case-error">${caseId}<br>missing</div>`;
+  }
 
   function generateWCAScramble() {
     const faces = ['U','D','L','R','F','B'];
@@ -1802,6 +1861,8 @@
       const result = window.CubeScrambleGenerator.generate(allowedCaseIds);
       currentCase = result;
       scrambleText.textContent = result.scramble;
+      // Preload the image so it's ready when the user hits Hint
+      loadHintImage(result.caseId);
     } else {
       currentCase = null;
       scrambleText.textContent = generateWCAScramble();
@@ -1818,37 +1879,47 @@
     hintPanel.style.display = '';
 
     const totalChunks = currentCase.algChunks.length;
-    const maxLevel = totalChunks + 1; // +1 because level 0 reveals just the name
+    // Total stages: image + name + each chunk
+    const maxLevel = totalChunks + 2;
 
     if (hintLevel < 0) {
-      // Nothing revealed yet
+      // Nothing revealed
+      hintImageRow.style.display = 'none';
       hintNameRow.style.display = 'none';
       hintAlgRow.style.display = 'none';
       hintProgress.textContent = `Hint: 0 / ${maxLevel}`;
       return;
     }
 
-    // Level 0+ : show the case name
-    hintNameRow.style.display = '';
-    hintName.textContent = currentCase.caseName;
+    // Level 0+ : show the case image
+    hintImageRow.style.display = '';
 
     if (hintLevel === 0) {
+      hintNameRow.style.display = 'none';
       hintAlgRow.style.display = 'none';
       hintProgress.textContent = `Hint: 1 / ${maxLevel}`;
       return;
     }
 
-    // Level 1+ : reveal alg chunks progressively
+    // Level 1+ : show the case name
+    hintNameRow.style.display = '';
+    hintName.textContent = currentCase.caseName;
+
+    if (hintLevel === 1) {
+      hintAlgRow.style.display = 'none';
+      hintProgress.textContent = `Hint: 2 / ${maxLevel}`;
+      return;
+    }
+
+    // Level 2+ : reveal alg chunks progressively
     hintAlgRow.style.display = '';
-    const revealed = hintLevel; // number of chunks to reveal
+    const revealed = hintLevel - 1; // chunks revealed = level - 1
     hintAlg.innerHTML = '';
     currentCase.algChunks.forEach((chunk, i) => {
       const span = document.createElement('span');
       span.className = 'hint-chunk' + (i < revealed ? '' : ' locked');
       const inner = document.createElement('span');
       inner.className = 'hint-chunk-text';
-      // Show real text if revealed; otherwise show placeholder text the user can't read
-      // (we render the text either way so widths match, then blur-locked ones via CSS)
       inner.textContent = chunk;
       span.appendChild(inner);
       hintAlg.appendChild(span);
@@ -1859,7 +1930,7 @@
 
   function nextHint() {
     if (scrambleMode !== 'trainer' || !currentCase) return;
-    const max = currentCase.algChunks.length;
+    const max = currentCase.algChunks.length + 1; // image + name + chunks
     if (hintLevel < max) hintLevel++;
     renderHint();
   }
