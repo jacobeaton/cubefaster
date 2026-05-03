@@ -1072,6 +1072,194 @@
     .theme-picker { top: 8px; right: 8px; padding: 6px 8px; }
     .theme-picker label { display: none; }
   }
+
+  /* ===== Quiz Panel ===== */
+  .quiz-panel { margin-bottom: 4px; }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+
+  .quiz-mode-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .quiz-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.15s;
+  }
+
+  .quiz-tab:hover { color: var(--paper); border-color: rgba(255,255,255,0.4); }
+  .quiz-tab.active { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+  .quiz-question {
+    padding: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 3px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .quiz-question-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .quiz-case-name {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--accent-2);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .quiz-case-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  .quiz-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 7px;
+  }
+
+  .quiz-answer {
+    min-height: 46px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-bottom: 14px;
+    align-items: center;
+  }
+
+  .quiz-answer-empty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-style: italic;
+  }
+
+  .quiz-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+    min-height: 34px;
+  }
+
+  .quiz-chunk {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+
+  .quiz-chunk.pool-chunk {
+    background: rgba(255,255,255,0.1);
+    color: var(--paper);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .quiz-chunk.pool-chunk:hover {
+    background: var(--accent-2);
+    color: var(--accent-2-ink);
+    border-color: var(--accent-2);
+  }
+
+  .quiz-chunk.answer-chunk {
+    background: var(--accent-4);
+    color: var(--paper);
+    border: 1px solid transparent;
+  }
+
+  .quiz-chunk.answer-chunk:hover { opacity: 0.75; }
+
+  .quiz-chunk.locked-chunk {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .quiz-action-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+  .quiz-feedback {
+    padding: 9px 14px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+    word-break: break-word;
+  }
+
+  .quiz-feedback.correct {
+    background: rgba(62, 168, 100, 0.15);
+    border: 1px solid var(--accent-3);
+    color: var(--accent-3);
+    display: block;
+  }
+
+  .quiz-feedback.incorrect {
+    background: rgba(214, 69, 69, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    display: block;
+  }
+
+  .quiz-score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .quiz-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
 </style>
 </head>
 <body>
@@ -1107,14 +1295,15 @@
 <div class="timer-panel">
   <div class="timer-display" id="timerDisplay">0.00</div>
   <div class="timer-status" id="timerStatus">Press &amp; hold SPACE to start</div>
-  <div class="timer-controls">
+  <div class="timer-controls" id="timerControls">
     <button class="btn primary" id="startBtn">Start (Space)</button>
     <button class="btn" id="resetBtn">Reset Session</button>
     <button class="btn" id="inspectionToggle">Inspection: ON</button>
     <button class="btn" id="modeToggle">Mode: WCA Random</button>
     <button class="btn" id="hintBtn" style="display:none;">Hint (H)</button>
+    <button class="btn" id="quizToggle">Quiz Mode</button>
   </div>
-  <div class="scramble-row">
+  <div class="scramble-row" id="scrambleRow">
     <span class="scramble-label">Scramble</span>
     <span class="scramble-text" id="scrambleText">—</span>
     <button class="scramble-btn" id="newScrambleBtn">New</button>
@@ -1138,14 +1327,44 @@
     <div class="case-filter-label">Train cases:</div>
     <div class="case-filter-groups" id="caseFilterGroups"></div>
   </div>
-  <div class="session-stats">
+  <!-- ===== Quiz Panel ===== -->
+  <div class="quiz-panel" id="quizPanel" style="display:none;">
+    <div class="quiz-header">
+      <div class="quiz-mode-tabs">
+        <button class="quiz-tab active" data-quiz-group="oll">OLL Only</button>
+        <button class="quiz-tab" data-quiz-group="pll">PLL Only</button>
+        <button class="quiz-tab" data-quiz-group="mix">Mix</button>
+      </div>
+      <button class="btn" id="quizExitBtn">← Exit Quiz</button>
+    </div>
+    <div class="quiz-question">
+      <div class="quiz-question-prompt">What is the algorithm for…</div>
+      <div class="quiz-case-name" id="quizCaseName">—</div>
+      <div class="quiz-case-group-label" id="quizCaseGroup">—</div>
+    </div>
+    <div class="quiz-section-label">Your answer</div>
+    <div class="quiz-answer" id="quizAnswer"></div>
+    <div class="quiz-section-label">Chunks</div>
+    <div class="quiz-pool" id="quizPool"></div>
+    <div class="quiz-action-row">
+      <button class="btn primary" id="quizSubmit">Check</button>
+      <button class="btn" id="quizSkip">Skip</button>
+    </div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+    <div class="quiz-score-row">
+      <div class="quiz-score" id="quizScore">Score: 0 / 0</div>
+      <button class="btn" id="quizResetScore">Reset Score</button>
+    </div>
+  </div>
+
+  <div class="session-stats" id="sessionStats">
     <div class="stat"><div class="stat-label">Last</div><div class="stat-value" id="statLast">—</div></div>
     <div class="stat"><div class="stat-label">Best</div><div class="stat-value" id="statBest">—</div></div>
     <div class="stat"><div class="stat-label">Ao5</div><div class="stat-value" id="statAo5">—</div></div>
     <div class="stat"><div class="stat-label">Ao12</div><div class="stat-value" id="statAo12">—</div></div>
     <div class="stat"><div class="stat-label">Solves</div><div class="stat-value" id="statCount">0</div></div>
   </div>
-  <div class="timer-help">Hold SPACE until green, release to start · Tap SPACE again to stop · Press H for hints</div>
+  <div class="timer-help" id="timerHelp">Hold SPACE until green, release to start · Tap SPACE again to stop · Press H for hints</div>
 </div>
 
 <!-- ===== TOC ===== -->
@@ -2032,6 +2251,205 @@
   newScrambleBtn.addEventListener('click', generateScramble);
   generateScramble();
   updateStats();
+})();
+
+/* ============================================================
+   QUIZ MODE
+   ============================================================ */
+(function() {
+  const CASES = window.CubeScrambleGenerator.CASES;
+  const chunkAlg = window.CubeScrambleGenerator.chunkAlg;
+
+  const quizToggle   = document.getElementById('quizToggle');
+  const quizExitBtn  = document.getElementById('quizExitBtn');
+  const quizPanel    = document.getElementById('quizPanel');
+  const quizNameEl   = document.getElementById('quizCaseName');
+  const quizGroupEl  = document.getElementById('quizCaseGroup');
+  const quizAnswerEl = document.getElementById('quizAnswer');
+  const quizPoolEl   = document.getElementById('quizPool');
+  const quizSubmit   = document.getElementById('quizSubmit');
+  const quizSkip     = document.getElementById('quizSkip');
+  const quizFeedback = document.getElementById('quizFeedback');
+  const quizScoreEl  = document.getElementById('quizScore');
+  const quizReset    = document.getElementById('quizResetScore');
+
+  // Elements to hide when quiz mode is active (display values saved & restored)
+  const hideIds = ['timerDisplay','timerStatus','timerControls','scrambleRow',
+                   'hintPanel','caseFilter','sessionStats','timerHelp'];
+  let savedDisplays = [];
+
+  const GROUP_LABELS = {
+    'oll-edges':   'OLL · Edges',
+    'oll-corners': 'OLL · Corners',
+    'pll-corners': 'PLL · Corners',
+    'pll-edges':   'PLL · Edges',
+  };
+
+  let quizActive  = false;
+  let quizGroup   = 'oll';
+  let correct     = 0;
+  let total       = 0;
+  let currentCase = null;
+  let answerChunks = [];
+  let poolChunks   = [];
+  let checked      = false;
+
+  function getCaseIds() {
+    if (quizGroup === 'oll') return Object.keys(CASES).filter(id => CASES[id].group.startsWith('oll'));
+    if (quizGroup === 'pll') return Object.keys(CASES).filter(id => CASES[id].group.startsWith('pll'));
+    return Object.keys(CASES);
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildPool(correctChunks, caseId) {
+    // Unique set of correct chunks to avoid re-adding chunks already present
+    const correctSet = new Set(correctChunks);
+    const distractorCandidates = [];
+    Object.entries(CASES).forEach(([id, c]) => {
+      if (id === caseId) return;
+      chunkAlg(c.alg).forEach(ch => {
+        if (!correctSet.has(ch) && !distractorCandidates.includes(ch)) {
+          distractorCandidates.push(ch);
+        }
+      });
+    });
+    const distractors = shuffle(distractorCandidates).slice(0, 4);
+    return shuffle([...correctChunks, ...distractors]);
+  }
+
+  function loadQuestion() {
+    const ids = getCaseIds();
+    const id  = ids[Math.floor(Math.random() * ids.length)];
+    const c   = CASES[id];
+    const chunks = chunkAlg(c.alg);
+
+    currentCase  = { id, name: c.name, group: c.group, chunks };
+    answerChunks = [];
+    poolChunks   = buildPool(chunks, id);
+    checked      = false;
+
+    quizNameEl.textContent  = c.name;
+    quizGroupEl.textContent = GROUP_LABELS[c.group] || c.group;
+    quizFeedback.className  = 'quiz-feedback';
+    quizFeedback.textContent = '';
+    quizSubmit.textContent  = 'Check';
+
+    render();
+  }
+
+  function render() {
+    // Answer area
+    quizAnswerEl.innerHTML = '';
+    if (answerChunks.length === 0) {
+      const em = document.createElement('span');
+      em.className = 'quiz-answer-empty';
+      em.textContent = 'click chunks below to build your answer';
+      quizAnswerEl.appendChild(em);
+    } else {
+      answerChunks.forEach((chunk, i) => {
+        const el = document.createElement('span');
+        el.className = 'quiz-chunk answer-chunk' + (checked ? ' locked-chunk' : '');
+        el.textContent = chunk;
+        if (!checked) {
+          el.addEventListener('click', () => {
+            answerChunks.splice(i, 1);
+            poolChunks.push(chunk);
+            render();
+          });
+        }
+        quizAnswerEl.appendChild(el);
+      });
+    }
+
+    // Pool
+    quizPoolEl.innerHTML = '';
+    poolChunks.forEach((chunk, i) => {
+      const el = document.createElement('span');
+      el.className = 'quiz-chunk pool-chunk' + (checked ? ' locked-chunk' : '');
+      el.textContent = chunk;
+      if (!checked) {
+        el.addEventListener('click', () => {
+          poolChunks.splice(i, 1);
+          answerChunks.push(chunk);
+          render();
+        });
+      }
+      quizPoolEl.appendChild(el);
+    });
+
+    quizScoreEl.textContent = `Score: ${correct} / ${total}`;
+  }
+
+  quizSubmit.addEventListener('click', () => {
+    if (checked) { loadQuestion(); return; }
+    if (answerChunks.length === 0) return;
+
+    checked = true;
+    total++;
+    const isCorrect = JSON.stringify(answerChunks) === JSON.stringify(currentCase.chunks);
+    if (isCorrect) {
+      correct++;
+      quizFeedback.className = 'quiz-feedback correct';
+      quizFeedback.textContent = 'Correct!';
+    } else {
+      quizFeedback.className = 'quiz-feedback incorrect';
+      quizFeedback.textContent = `Not quite. Answer: ${currentCase.chunks.join('  ·  ')}`;
+    }
+    quizSubmit.textContent = 'Next →';
+    render();
+  });
+
+  quizSkip.addEventListener('click', loadQuestion);
+
+  quizReset.addEventListener('click', () => {
+    correct = 0;
+    total   = 0;
+    loadQuestion();
+  });
+
+  // Tab switching
+  document.querySelectorAll('.quiz-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.quiz-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      quizGroup = tab.dataset.quizGroup;
+      loadQuestion();
+    });
+  });
+
+  // Enter key: check / next while quiz is active
+  document.addEventListener('keydown', e => {
+    if (!quizActive) return;
+    if (e.key !== 'Enter') return;
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    quizSubmit.click();
+  });
+
+  function enterQuiz() {
+    quizActive    = true;
+    savedDisplays = hideIds.map(id => { const el = document.getElementById(id); return el ? el.style.display : null; });
+    hideIds.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    quizPanel.style.display = '';
+    loadQuestion();
+  }
+
+  function exitQuiz() {
+    quizActive = false;
+    quizPanel.style.display = 'none';
+    hideIds.forEach((id, i) => { const el = document.getElementById(id); if (el) el.style.display = savedDisplays[i]; });
+  }
+
+  quizToggle.addEventListener('click', () => { if (quizActive) exitQuiz(); else enterQuiz(); });
+  quizExitBtn.addEventListener('click', exitQuiz);
 })();
 
 /* ============================================================
