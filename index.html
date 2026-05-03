@@ -1082,9 +1082,17 @@
     align-items: center;
     margin-bottom: 14px;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .quiz-mode-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .quiz-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
 
   .quiz-tab {
     font-family: 'JetBrains Mono', monospace;
@@ -1335,7 +1343,10 @@
         <button class="quiz-tab" data-quiz-group="pll">PLL Only</button>
         <button class="quiz-tab" data-quiz-group="mix">Mix</button>
       </div>
-      <button class="btn" id="quizExitBtn">← Exit Quiz</button>
+      <div class="quiz-header-right">
+        <button class="quiz-tab" id="quizToggleNames">Triggers: OFF</button>
+        <button class="btn" id="quizExitBtn">← Exit</button>
+      </div>
     </div>
     <div class="quiz-question">
       <div class="quiz-question-prompt">What is the algorithm for…</div>
@@ -2260,18 +2271,34 @@
   const CASES = window.CubeScrambleGenerator.CASES;
   const chunkAlg = window.CubeScrambleGenerator.chunkAlg;
 
-  const quizToggle   = document.getElementById('quizToggle');
-  const quizExitBtn  = document.getElementById('quizExitBtn');
-  const quizPanel    = document.getElementById('quizPanel');
-  const quizNameEl   = document.getElementById('quizCaseName');
-  const quizGroupEl  = document.getElementById('quizCaseGroup');
-  const quizAnswerEl = document.getElementById('quizAnswer');
-  const quizPoolEl   = document.getElementById('quizPool');
-  const quizSubmit   = document.getElementById('quizSubmit');
-  const quizSkip     = document.getElementById('quizSkip');
-  const quizFeedback = document.getElementById('quizFeedback');
-  const quizScoreEl  = document.getElementById('quizScore');
-  const quizReset    = document.getElementById('quizResetScore');
+  // Trigger names keyed by the exact move string used in algorithm chunks
+  const TRIGGER_NAMES = {
+    "R U R' U'":  "Sexy",
+    "R U' R' U":  "Swap Sexy",
+    "R U R' U":   "Righty Sexy",
+    "R U' R' U'": "Lefty Sexy",
+    "R' F R F'":  "Sledgehammer",
+    "F R' F' R":  "Hedgeslammer",
+    "r U R' U'":  "Fat Sexy",
+    "R U R'":     "Insert",
+    "R U' R'":    "Reverse Insert",
+    "R U2 R'":    "Double Insert",
+    "R' U2 R":    "Reverse Double Insert",
+  };
+
+  const quizToggle       = document.getElementById('quizToggle');
+  const quizExitBtn      = document.getElementById('quizExitBtn');
+  const quizPanel        = document.getElementById('quizPanel');
+  const quizNameEl       = document.getElementById('quizCaseName');
+  const quizGroupEl      = document.getElementById('quizCaseGroup');
+  const quizAnswerEl     = document.getElementById('quizAnswer');
+  const quizPoolEl       = document.getElementById('quizPool');
+  const quizSubmit       = document.getElementById('quizSubmit');
+  const quizSkip         = document.getElementById('quizSkip');
+  const quizFeedback     = document.getElementById('quizFeedback');
+  const quizScoreEl      = document.getElementById('quizScore');
+  const quizReset        = document.getElementById('quizResetScore');
+  const quizToggleNames  = document.getElementById('quizToggleNames');
 
   // Elements to hide when quiz mode is active (display values saved & restored)
   const hideIds = ['timerDisplay','timerStatus','timerControls','scrambleRow',
@@ -2285,14 +2312,19 @@
     'pll-edges':   'PLL · Edges',
   };
 
-  let quizActive  = false;
-  let quizGroup   = 'oll';
-  let correct     = 0;
-  let total       = 0;
-  let currentCase = null;
-  let answerChunks = [];
-  let poolChunks   = [];
-  let checked      = false;
+  let quizActive       = false;
+  let quizGroup        = 'oll';
+  let correct          = 0;
+  let total            = 0;
+  let currentCase      = null;
+  let answerChunks     = [];
+  let poolChunks       = [];
+  let checked          = false;
+  let showTriggerNames = false;
+
+  function displayChunk(moves) {
+    return showTriggerNames ? (TRIGGER_NAMES[moves] || moves) : moves;
+  }
 
   function getCaseIds() {
     if (quizGroup === 'oll') return Object.keys(CASES).filter(id => CASES[id].group.startsWith('oll'));
@@ -2357,7 +2389,8 @@
       answerChunks.forEach((chunk, i) => {
         const el = document.createElement('span');
         el.className = 'quiz-chunk answer-chunk' + (checked ? ' locked-chunk' : '');
-        el.textContent = chunk;
+        el.textContent = displayChunk(chunk);
+        el.title = showTriggerNames && TRIGGER_NAMES[chunk] ? chunk : '';
         if (!checked) {
           el.addEventListener('click', () => {
             answerChunks.splice(i, 1);
@@ -2374,7 +2407,8 @@
     poolChunks.forEach((chunk, i) => {
       const el = document.createElement('span');
       el.className = 'quiz-chunk pool-chunk' + (checked ? ' locked-chunk' : '');
-      el.textContent = chunk;
+      el.textContent = displayChunk(chunk);
+      el.title = showTriggerNames && TRIGGER_NAMES[chunk] ? chunk : '';
       if (!checked) {
         el.addEventListener('click', () => {
           poolChunks.splice(i, 1);
@@ -2401,7 +2435,7 @@
       quizFeedback.textContent = 'Correct!';
     } else {
       quizFeedback.className = 'quiz-feedback incorrect';
-      quizFeedback.textContent = `Not quite. Answer: ${currentCase.chunks.join('  ·  ')}`;
+      quizFeedback.textContent = `Not quite. Answer: ${currentCase.chunks.map(displayChunk).join('  ·  ')}`;
     }
     quizSubmit.textContent = 'Next →';
     render();
@@ -2415,14 +2449,21 @@
     loadQuestion();
   });
 
-  // Tab switching
-  document.querySelectorAll('.quiz-tab').forEach(tab => {
+  // Tab switching (scoped to mode tabs only, not the trigger toggle)
+  document.querySelectorAll('.quiz-mode-tabs .quiz-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.quiz-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.quiz-mode-tabs .quiz-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       quizGroup = tab.dataset.quizGroup;
       loadQuestion();
     });
+  });
+
+  quizToggleNames.addEventListener('click', () => {
+    showTriggerNames = !showTriggerNames;
+    quizToggleNames.textContent = showTriggerNames ? 'Triggers: ON' : 'Triggers: OFF';
+    quizToggleNames.classList.toggle('active', showTriggerNames);
+    render();
   });
 
   // Enter key: check / next while quiz is active
